@@ -13,6 +13,7 @@
   ],
   "transactions": [
     {
+      "id": "t1",
       "userId": "1111",
       "date": "2026-04-08",
       "type": "expense",
@@ -21,6 +22,7 @@
       "category": "식비"
     },
     {
+      "id": "t2",
       "userId": "1111",
       "date": "2026-04-07",
       "type": "income",
@@ -29,6 +31,7 @@
       "category": "임금"
     },
     {
+      "id": "t3",
       "userId": "2222",
       "date": "2026-04-05",
       "type": "income",
@@ -37,6 +40,7 @@
       "category": "임금"
     },
     {
+      "id": "t4",
       "userId": "2222",
       "date": "2026-04-07",
       "type": "expense",
@@ -45,6 +49,7 @@
       "category": "식비"
     },
     {
+      "id": "t5",
       "userId": "2222",
       "date": "2026-04-07",
       "type": "expense",
@@ -55,6 +60,7 @@
   ],
   "momoData": [
     {
+      "id": "m1",
       "userId": "1111",
       "isMomoHappy": false,
       "momoExp": 14,
@@ -64,6 +70,7 @@
       "momoFinalAttendance": "2026-04-07"
     },
     {
+      "id": "m2",
       "userId": "2222",
       "isMomoHappy": false,
       "momoExp": 103053,
