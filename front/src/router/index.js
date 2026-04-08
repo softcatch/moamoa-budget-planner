@@ -13,13 +13,10 @@ const router = createRouter({
       name: 'login', 
       component: ()=>import('@/pages/LoginPage.vue'),
     },
-    // {path: '/todo', name: 'todo', component: ()=>import('@/pages/TodoPage.vue') ,
-    //   meta: {requiresAuth: true},
-    // },
     {
-      path: '/todo',
-      name: 'todo',
-      component: ()=>import('@/pages/todo-pinia/TodoListPage.vue'),
+      path: '/mission',
+      name: 'mission',
+      component: ()=>import('@/components/Mission.vue'),
       meta: {requiresAuth: true},
     },
     {
