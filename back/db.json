@@ -1,0 +1,76 @@
+{
+  "users": [
+    {
+      "id": "1111",
+      "username": "12",
+      "password": "12"
+    },
+    {
+      "id": "2222",
+      "username": "34",
+      "password": "34"
+    }
+  ],
+  "transactions": [
+    {
+      "userId": "1111",
+      "date": "2026-04-08",
+      "type": "expense",
+      "amount": 9000,
+      "desc": "차돌짬뽕",
+      "category": "식비"
+    },
+    {
+      "userId": "1111",
+      "date": "2026-04-07",
+      "type": "income",
+      "amount": 300000,
+      "desc": "지원금",
+      "category": "임금"
+    },
+    {
+      "userId": "2222",
+      "date": "2026-04-05",
+      "type": "income",
+      "amount": 1234567,
+      "desc": "월급",
+      "category": "임금"
+    },
+    {
+      "userId": "2222",
+      "date": "2026-04-07",
+      "type": "expense",
+      "amount": 3000000,
+      "desc": "맛있는 점심",
+      "category": "식비"
+    },
+    {
+      "userId": "2222",
+      "date": "2026-04-07",
+      "type": "expense",
+      "amount": 400000,
+      "desc": "맛있는 저녁",
+      "category": "식비"
+    }
+  ],
+  "momoData": [
+    {
+      "userId": "1111",
+      "isMomoHappy": false,
+      "momoExp": 14,
+      "momoLevel": 1,
+      "momoMission": "오늘은 굶으세요!",
+      "momoAttendance": 4,
+      "momoFinalAttendance": "2026-04-07"
+    },
+    {
+      "userId": "2222",
+      "isMomoHappy": false,
+      "momoExp": 103053,
+      "momoLevel": 100,
+      "momoMission": "오늘은 걸어다니세요!",
+      "momoAttendance": 53,
+      "momoFinalAttendance": "2026-04-07"
+    }
+  ]
+}
