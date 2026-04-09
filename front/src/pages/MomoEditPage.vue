@@ -316,6 +316,30 @@ const getSelectedTextClass = (className) => {
   return className.split(' ').find((token) => token.startsWith('text-'));
 };
 
+const isCategorySelected = (category) => {
+  return selectedCategory.value === category.key;
+};
+
+const getCategoryTileClass = (category) => {
+  if (isCategorySelected(category)) {
+    return [
+      category.activeClass,
+      'border-2 ring-2 ring-offset-2 shadow-[0_10px_24px_rgba(15,23,42,0.08)]',
+    ];
+  }
+
+  return [
+    'border border-slate-200 bg-white text-slate-400 ring-1 ring-slate-100',
+    category.iconClass,
+  ];
+};
+
+const getCategoryLabelClass = (category) => {
+  return isCategorySelected(category)
+    ? getSelectedTextClass(category.activeClass)
+    : 'text-slate-400';
+};
+
 const resetForm = () => {
   type.value = 'expense';
   selectedCategory.value = null;
@@ -599,27 +623,19 @@ watch(
               @click="selectCategory(category)"
             >
               <span
-                class="flex h-16 w-16 items-center justify-center rounded-[22px] bg-white text-[28px] text-slate-400 ring-1 ring-slate-100 transition"
-                :class="
-                  selectedCategory === category.key
-                    ? category.activeClass
-                    : 'text-slate-400'
-                "
+                class="flex h-16 w-16 items-center justify-center rounded-[22px] text-[28px] transition"
+                :class="getCategoryTileClass(category)"
               >
                 <i
                   :class="[
                     category.icon,
-                    selectedCategory === category.key ? '' : category.iconClass,
+                    isCategorySelected(category) ? '' : category.iconClass,
                   ]"
                 ></i>
               </span>
               <span
                 class="text-[14px] font-medium leading-tight text-slate-400"
-                :class="
-                  selectedCategory === category.key
-                    ? getSelectedTextClass(category.activeClass)
-                    : 'text-slate-400'
-                "
+                :class="getCategoryLabelClass(category)"
               >
                 {{ category.label }}
               </span>
