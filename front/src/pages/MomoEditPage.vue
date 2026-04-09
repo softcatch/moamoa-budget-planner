@@ -441,6 +441,16 @@ const getSelectedTextClass = (className) => {
             />
           </div>
         </section>
+
+        <section v-if="isEditMode" class="mt-8 w-full">
+          <button
+            type="button"
+            class="flex h-16 w-full items-center justify-center gap-3 rounded-[22px] bg-rose-50 text-[18px] font-bold text-rose-400 transition hover:bg-rose-100"
+          >
+            <i class="fa-regular fa-trash-can text-[18px]"></i>
+            <span>삭제하기</span>
+          </button>
+        </section>
       </div>
     </section>
   </div>
