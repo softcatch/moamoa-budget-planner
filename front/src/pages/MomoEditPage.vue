@@ -1,11 +1,16 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { useMomoStore } from '@/stores/momo';
 
 /* =========================
  *  기본 모드 / 상태
  * ========================= */
 const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
+const momoStore = useMomoStore();
 
 const type = ref('expense'); // expense | income
 const selectedCategory = ref(null);
@@ -16,6 +21,7 @@ const amountInput = ref(null);
 
 const amount = ref('');
 const memo = ref('');
+const isSubmitting = ref(false);
 
 const categoryMap = {
   expense: [
@@ -207,6 +213,35 @@ const isEditMode = computed(() => {
   return route.query.mode === 'edit';
 });
 
+const editingTransactionId = computed(() => {
+  return route.query.transactionId ?? route.query.id ?? null;
+});
+
+const formattedSubmitDate = computed(() => {
+  const date = new Date(selectedDate.value);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+
+  return `${yyyy}-${mm}-${dd}`;
+});
+
+const transactionPayload = computed(() => {
+  const userId = authStore.currentUserId;
+
+  if (!userId) return null;
+
+  return {
+    id: editingTransactionId.value ?? undefined,
+    userId,
+    date: formattedSubmitDate.value,
+    type: type.value,
+    amount: parseAmount(amount.value),
+    desc: memo.value.trim(),
+    category: selectedCategory.value,
+  };
+});
+
 /* =========================
  *  이벤트 함수
  * ========================= */
@@ -269,10 +304,80 @@ const selectCategory = (category) => {
 const getSelectedTextClass = (className) => {
   return className.split(' ').find((token) => token.startsWith('text-'));
 };
+
+const goBack = () => {
+  router.back();
+};
+
+const submitForm = async () => {
+  if (isSubmitting.value) return;
+  if (!authStore.currentUserId) {
+    window.alert('로그인 정보가 없습니다.');
+    return;
+  }
+
+  if (!selectedCategory.value) {
+    window.alert('카테고리를 선택해주세요.');
+    return;
+  }
+
+  if (!parseAmount(amount.value)) {
+    window.alert('금액을 입력해주세요.');
+    return;
+  }
+
+  const payload = transactionPayload.value;
+
+  if (!payload) {
+    window.alert('전송할 데이터를 만들 수 없습니다.');
+    return;
+  }
+
+  if (isEditMode.value && !editingTransactionId.value) {
+    window.alert('수정할 거래 ID가 없습니다.');
+    return;
+  }
+
+  isSubmitting.value = true;
+
+  try {
+    if (isEditMode.value) {
+      await momoStore.editTransactionData(editingTransactionId.value, payload);
+    } else {
+      await momoStore.addTransactionData(payload);
+    }
+
+    await momoStore.fetchTransactionList(authStore.currentUserId);
+    router.back();
+  } catch (error) {
+    console.error('submitForm error:', error);
+    window.alert('저장 중 오류가 발생했습니다.');
+  } finally {
+    isSubmitting.value = false;
+  }
+};
 </script>
 
 <template>
   <div>
+    <section class="flex items-center justify-between">
+      <button
+        type="button"
+        class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[22px] text-slate-900 shadow-sm"
+        @click="goBack"
+      >
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <button
+        type="button"
+        :disabled="isSubmitting"
+        class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[22px] text-slate-900 shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
+        @click="submitForm"
+      >
+        <i class="fa-solid fa-check"></i>
+      </button>
+    </section>
     <!-- 지출 / 수입 토글 -->
     <div class="mt-7 flex justify-center">
       <div class="flex w-[140px] h-11 rounded-[18px] bg-white overflow-hidden">
