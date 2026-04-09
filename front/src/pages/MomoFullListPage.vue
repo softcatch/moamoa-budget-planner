@@ -93,7 +93,7 @@ onMounted(async () => {
           <div class="space-y-4">
             <TransactionCard
               v-for="item in group.items"
-              :key="item.id"
+              :id="item.id"
               :type="item.type"
               :category="item.category"
               :desc="item.desc"

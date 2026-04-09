@@ -7,8 +7,6 @@ import 'v-calendar/style.css';
 import App from './App.vue';
 import router from './router';
 
-import VCalendar from 'v-calendar';
-import 'v-calendar/style.css';
 import { useAuthStore } from './stores/auth';
 
 const app = createApp(App);

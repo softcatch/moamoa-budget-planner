@@ -178,7 +178,7 @@ const monthLabel = computed(() => {
 
         <TransactionCard
           v-for="item in selectedDateTransactions"
-          :key="item.id"
+          :id="item.id"
           :type="item.type"
           :category="item.category"
           :desc="item.desc"
