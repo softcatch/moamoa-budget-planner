@@ -16,101 +16,194 @@ export const useMomoStore = defineStore('momo', () => {
   const momoMission = ref('');
   const momoAttendance = ref(0);
   const momoFinalAttendance = ref('');
+  const currentMomoUserId = ref(null);
+  const momoDataId = ref(null);
 
-  // 트렌젝션
-  // 배열 전체를 받아 와 수정하는 경우가 많으므로 reactive보단 ref 채탱.. 추후 필요해 따라 변경 가능
+  // 트랜잭션
+  // 배열 전체를 받아와 교체하는 경우가 많으므로 ref 사용
   const transactionList = ref([]);
 
+  const resetMomoData = () => {
+    isMomoHappy.value = true;
+    momoExp.value = 0;
+    momoLevel.value = 1;
+    momoMission.value = '';
+    momoAttendance.value = 0;
+    momoFinalAttendance.value = '';
+    momoDataId.value = null;
+  };
+
+  const ensureMomoDataId = async (userId) => {
+    if (currentMomoUserId.value === userId && momoDataId.value) {
+      return momoDataId.value;
+    }
+
+    const response = await axios.get(`${BASE_URL}/momoData`, {
+      params: { userId },
+    });
+
+    const momoData = response.data[0];
+
+    currentMomoUserId.value = userId;
+    momoDataId.value = momoData?.id ?? null;
+
+    return momoDataId.value;
+  };
+
   // fetch
-  const fetchData = async () => {
+  const fetchMomoData = async (userId) => {
     isFetching.value = true;
     isError.value = false;
 
     try {
-      await fetchTransactionList();
-      await fetchMission();
-      await fetchMomoStatus();
-      await fetchAttendance();
+      const response = await axios.get(`${BASE_URL}/momoData`, {
+        params: { userId },
+      });
+
+      const momoData = response.data[0];
+      currentMomoUserId.value = userId;
+
+      if (!momoData) {
+        resetMomoData();
+        currentMomoUserId.value = userId;
+        return;
+      }
+
+      momoDataId.value = momoData.id;
+      isMomoHappy.value = momoData.isMomoHappy;
+      momoExp.value = momoData.momoExp;
+      momoLevel.value = momoData.momoLevel;
+      momoMission.value = momoData.momoMission;
+      momoAttendance.value = momoData.momoAttendance;
+      momoFinalAttendance.value = momoData.momoFinalAttendance;
     } catch (error) {
-      console.error('fetchData error:', error);
+      console.error('fetchMomoData error:', error);
       isError.value = true;
     } finally {
       isFetching.value = false;
     }
   };
 
-  const fetchTransactionList = async () => {
+  const fetchTransactionList = async (userId) => {
+    isFetching.value = true;
+    isError.value = false;
+
     try {
-      // TODO: 내역 조회
-      // const response = await axios.get(`${BASE_URL}/transactions`);
-      // transactionList.value = response.data;
+      const response = await axios.get(`${BASE_URL}/transactions`, {
+        params: { userId },
+      });
+      transactionList.value = response.data;
     } catch (error) {
-      console.error('fetchList error:', error);
+      console.error('fetchTransactionList error:', error);
       isError.value = true;
+    } finally {
+      isFetching.value = false;
     }
   };
 
-  const fetchMission = async () => {
+  const createMomoData = async (payload) => {
+    isError.value = false;
+
     try {
-      // TODO: 모모 미션 조회
-      // const response = await axios.get(`${BASE_URL}/momo/mission`);
-      // momoMission.value = response.data.momoMission;
+      const response = await axios.post(`${BASE_URL}/momoData`, payload);
+      currentMomoUserId.value = response.data.userId;
+      momoDataId.value = response.data.id;
+      return response.data;
     } catch (error) {
-      console.error('fetchMission error:', error);
+      console.error('createMomoData error:', error);
       isError.value = true;
+      throw error;
     }
   };
 
-  const fetchMomoStatus = async () => {
+  const editMomoData = async (userId, payload) => {
+    isError.value = false;
+
     try {
-      // TODO: 모모 상태 조회
-      // const response = await axios.get(`${BASE_URL}/momo/status`);
-      // isMomoHappy.value = response.data.isMomoHappy;
-      // momoExp.value = response.data.momoExp;
-      // momoLevel.value = response.data.momoLevel;
+      const targetMomoDataId = await ensureMomoDataId(userId);
+
+      if (!targetMomoDataId) {
+        const createdMomoData = await createMomoData({
+          userId,
+          isMomoHappy: payload.isMomoHappy ?? true,
+          momoExp: payload.momoExp ?? 0,
+          momoLevel: payload.momoLevel ?? 1,
+          momoMission: payload.momoMission ?? '',
+          momoAttendance: payload.momoAttendance ?? 0,
+          momoFinalAttendance: payload.momoFinalAttendance ?? '',
+        });
+        await fetchMomoData(userId);
+        return createdMomoData;
+      }
+
+      const response = await axios.patch(`${BASE_URL}/momoData/${targetMomoDataId}`, payload);
+      momoDataId.value = response.data.id;
+      currentMomoUserId.value = response.data.userId;
+      await fetchMomoData(userId);
+      return response.data;
     } catch (error) {
-      console.error('fetchMomoStatus error:', error);
+      console.error('editMomoData error:', error);
       isError.value = true;
+      throw error;
     }
   };
 
-  const fetchAttendance = async () => {
-    try {
-      // TODO: 출석 정보 조회 (마지막 출석일, 연속 출석 기록)
-      // const response = await axios.get(`${BASE_URL}/momo/attendance`);
-      // momoAttendance.value = response.data.momoAttendance;
-      // momoFinalAttendance.value = response.data.momoFinalAttendance;
-    } catch (error) {
-      console.error('fetchAttendance error:', error);
-      isError.value = true;
+  const updateIsMomoHappy = async (userId, isHappy) => {
+    return await editMomoData(userId, { isMomoHappy: isHappy });
+  };
+
+  const updateMomoExp = async (userId, exp) => {
+    return await editMomoData(userId, { momoExp: exp });
+  };
+
+  const updateMomoLevel = async (userId, level) => {
+    return await editMomoData(userId, { momoLevel: level });
+  };
+
+  const updateMomoMission = async (userId, mission) => {
+    return await editMomoData(userId, { momoMission: mission });
+  };
+
+  const updateMomoAttendance = async (userId, attendance, finalAttendance) => {
+    const payload = {
+      momoAttendance: attendance,
+    };
+
+    if (finalAttendance !== undefined) {
+      payload.momoFinalAttendance = finalAttendance;
     }
+
+    return await editMomoData(userId, payload);
   };
 
   // CRUD actions
-  const addData = async (payload) => {
+  const addTransactionData = async (payload) => {
+    isError.value = false;
+
     try {
-      // TODO: 트랜젝션 데이터 추가
-      // await axios.post(`${BASE_URL}/transactions`, payload);
+      await axios.post(`${BASE_URL}/transactions`, payload);
     } catch (error) {
       console.error('addData error:', error);
       isError.value = true;
     }
   };
 
-  const deleteData = async (transactionId) => {
+  const deleteTransactionData = async (transactionId) => {
+    isError.value = false;
+
     try {
-      // TODO: 트랜젝션 데이터 삭제
-      // await axios.delete(`${BASE_URL}/transactions/${transactionId}`);
+      await axios.delete(`${BASE_URL}/transactions/${transactionId}`);
     } catch (error) {
       console.error('deleteData error:', error);
       isError.value = true;
     }
   };
 
-  const editData = async (transactionId, payload) => {
+  const editTransactionData = async (transactionId, payload) => {
+    isError.value = false;
+
     try {
-      // TODO: 트랜젝션 데이터 수정
-      // await axios.put(`${BASE_URL}/transactions/${transactionId}`, payload);
+      await axios.put(`${BASE_URL}/transactions/${transactionId}`, payload);
     } catch (error) {
       console.error('editData error:', error);
       isError.value = true;
@@ -118,7 +211,6 @@ export const useMomoStore = defineStore('momo', () => {
   };
 
   return {
-    BASE_URL,
     isFetching,
     isError,
     isMomoHappy,
@@ -127,14 +219,22 @@ export const useMomoStore = defineStore('momo', () => {
     momoMission,
     momoAttendance,
     momoFinalAttendance,
+    currentMomoUserId,
+    momoDataId,
     transactionList,
-    fetchData,
+    resetMomoData,
+    ensureMomoDataId,
+    createMomoData,
+    editMomoData,
+    updateIsMomoHappy,
+    updateMomoExp,
+    updateMomoLevel,
+    updateMomoMission,
+    updateMomoAttendance,
+    fetchMomoData,
     fetchTransactionList,
-    fetchMission,
-    fetchMomoStatus,
-    fetchAttendance,
-    addData,
-    deleteData,
-    editData,
+    addTransactionData,
+    deleteTransactionData,
+    editTransactionData,
   };
 });
