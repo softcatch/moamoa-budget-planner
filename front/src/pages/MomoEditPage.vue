@@ -1,9 +1,12 @@
 <script setup>
 import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 /* =========================
  *  기본 모드 / 상태
  * ========================= */
+const route = useRoute();
+
 const type = ref('expense'); // expense | income
 const selectedCategory = ref(null);
 
@@ -12,6 +15,7 @@ const selectedDate = ref(new Date());
 const amountInput = ref(null);
 
 const amount = ref('');
+const memo = ref('');
 
 const categoryMap = {
   expense: [
@@ -199,6 +203,10 @@ const currentCategories = computed(() => {
   return categoryMap[type.value];
 });
 
+const isEditMode = computed(() => {
+  return route.query.mode === 'edit';
+});
+
 /* =========================
  *  이벤트 함수
  * ========================= */
@@ -378,6 +386,7 @@ const getSelectedTextClass = (className) => {
           </button>
         </div>
 
+        <!-- 카테고리 목록 -->
         <section class="mt-11 w-full">
           <h2 class="text-[28px] font-extrabold text-slate-900">카테고리</h2>
 
@@ -415,6 +424,21 @@ const getSelectedTextClass = (className) => {
                 {{ category.label }}
               </span>
             </button>
+          </div>
+        </section>
+
+        <!-- 메모 -->
+        <section class="mt-12 w-full">
+          <h2 class="text-[28px] font-extrabold text-slate-900">메모</h2>
+
+          <div class="mt-5">
+            <input
+              v-model="memo"
+              type="text"
+              maxlength="50"
+              placeholder="메모를 입력하세요"
+              class="h-15 w-full rounded-[20px] border border-slate-200 bg-white px-5 text-[18px] font-medium text-slate-900 outline-none placeholder:text-slate-300 focus:border-slate-300"
+            />
           </div>
         </section>
       </div>
