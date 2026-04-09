@@ -1,36 +1,22 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
 
 import Calendar from '@/components/Calendar.vue';
 import AppHeader from '@/components/AppHeader.vue';
 import TransactionCard from '@/components/TransactionCard.vue';
 import calendarIcon from '@/assets/calendar.png';
+import { useMomoStore } from '@/stores/momo';
 
-const BASE_URL = 'http://localhost:3000';
+const momoStore = useMomoStore();
 
 const selectedDate = ref(new Date(2026, 3, 8));
-const transactions = ref([]);
 const currentUserId = ref('1111');
 
-const fetchTransactions = async () => {
-  try {
-    const res = await axios.get(`${BASE_URL}/transactions`);
-    transactions.value = res.data;
-  } catch (error) {
-    console.error('거래 내역 불러오기 실패:', error);
-  }
-};
-
 onMounted(() => {
-  fetchTransactions();
+  momoStore.fetchTransactionList(currentUserId.value);
 });
 
-const userTransactions = computed(() => {
-  return transactions.value.filter(
-    (item) => item.userId === currentUserId.value,
-  );
-});
+const userTransactions = computed(() => momoStore.transactionList);
 
 const formattedDate = computed(() => {
   const d = selectedDate.value;
