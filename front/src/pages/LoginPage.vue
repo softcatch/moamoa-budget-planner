@@ -77,7 +77,7 @@ const submit = async () => {
       });
     }
 
-    await router.push('/');
+    router.push('/');
   } catch (error) {
     console.error('LoginPage submit error:', error);
   }
