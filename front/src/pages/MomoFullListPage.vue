@@ -15,7 +15,7 @@ const currentUserId = ref('1111');
 
 const sortedTransactions = computed(() => {
   return [...momoStore.transactionList].sort(
-    (a, b) => new Date(a.date) - new Date(b.date),
+    (a, b) => new Date(b.date) - new Date(a.date),
   );
 });
 
