@@ -34,6 +34,10 @@ export const useAuthStore = defineStore('auth', () => {
     };
   });
 
+  const createUserId = () => {
+    return `u${Date.now()}`;
+  };
+
   // 에러 상태 초기화
   const clearError = () => {
     isError.value = false;
@@ -114,16 +118,17 @@ export const useAuthStore = defineStore('auth', () => {
   // 1. username 중복 검사
   // 2. 사용자 생성
   // 3. 가입 후 자동 로그인 처리
-  const signup = async ({ username, password }) => {
+  const signup = async ({ username, password, name }) => {
     isFetching.value = true;
     clearError();
 
     try {
       const trimmedUsername = username.trim();
       const trimmedPassword = password.trim();
+      const trimmedName = name.trim();
 
-      if (!trimmedUsername || !trimmedPassword) {
-        throw new Error('아이디와 비밀번호를 모두 입력해주세요.');
+      if (!trimmedUsername || !trimmedPassword || !trimmedName) {
+        throw new Error('아이디, 비밀번호, 사용자 이름을 모두 입력해주세요.');
       }
 
       // 동일 username 존재 여부 확인
@@ -137,8 +142,10 @@ export const useAuthStore = defineStore('auth', () => {
 
       // 신규 사용자 생성
       const createdUserResponse = await axios.post(`${BASE_URL}/users`, {
+        id: createUserId(),
         username: trimmedUsername,
         password: trimmedPassword,
+        name: trimmedName,
       });
 
       setAuthState(createdUserResponse.data);
