@@ -13,6 +13,146 @@ const amountInput = ref(null);
 
 const amount = ref('');
 
+const categoryMap = {
+  expense: [
+    {
+      key: 'food',
+      label: '식비',
+      icon: 'fa-solid fa-utensils',
+      iconClass: 'text-amber-500',
+      activeClass: 'bg-amber-50 text-amber-600 ring-amber-200',
+    },
+    {
+      key: 'transport',
+      label: '교통',
+      icon: 'fa-solid fa-bus',
+      iconClass: 'text-sky-500',
+      activeClass: 'bg-sky-50 text-sky-600 ring-sky-200',
+    },
+    {
+      key: 'utilities',
+      label: '공과금',
+      icon: 'fa-solid fa-file-invoice-dollar',
+      iconClass: 'text-slate-500',
+      activeClass: 'bg-slate-100 text-slate-700 ring-slate-200',
+    },
+    {
+      key: 'medical',
+      label: '의료비',
+      icon: 'fa-solid fa-pills',
+      iconClass: 'text-rose-500',
+      activeClass: 'bg-rose-50 text-rose-600 ring-rose-200',
+    },
+    {
+      key: 'hobby',
+      label: '취미활동',
+      icon: 'fa-solid fa-gamepad',
+      iconClass: 'text-fuchsia-500',
+      activeClass: 'bg-fuchsia-50 text-fuchsia-600 ring-fuchsia-200',
+    },
+    {
+      key: 'essentials',
+      label: '생필품',
+      icon: 'fa-solid fa-cart-shopping',
+      iconClass: 'text-zinc-500',
+      activeClass: 'bg-zinc-100 text-zinc-700 ring-zinc-200',
+    },
+    {
+      key: 'education',
+      label: '교육',
+      icon: 'fa-solid fa-book-open',
+      iconClass: 'text-indigo-500',
+      activeClass: 'bg-indigo-50 text-indigo-600 ring-indigo-200',
+    },
+    {
+      key: 'subscription',
+      label: '구독료',
+      icon: 'fa-solid fa-credit-card',
+      iconClass: 'text-violet-500',
+      activeClass: 'bg-violet-50 text-violet-600 ring-violet-200',
+    },
+    {
+      key: 'mobile',
+      label: '통신비',
+      icon: 'fa-solid fa-mobile-screen-button',
+      iconClass: 'text-emerald-500',
+      activeClass: 'bg-emerald-50 text-emerald-600 ring-emerald-200',
+    },
+    {
+      key: 'beauty',
+      label: '미용',
+      icon: 'fa-solid fa-scissors',
+      iconClass: 'text-pink-500',
+      activeClass: 'bg-pink-50 text-pink-600 ring-pink-200',
+    },
+    {
+      key: 'cafe',
+      label: '카페/간식',
+      icon: 'fa-solid fa-mug-hot',
+      iconClass: 'text-orange-500',
+      activeClass: 'bg-orange-50 text-orange-600 ring-orange-200',
+    },
+    {
+      key: 'gift',
+      label: '경조사/선물',
+      icon: 'fa-solid fa-gift',
+      iconClass: 'text-red-500',
+      activeClass: 'bg-red-50 text-red-600 ring-red-200',
+    },
+    {
+      key: 'travel',
+      label: '여행',
+      icon: 'fa-solid fa-plane-departure',
+      iconClass: 'text-cyan-500',
+      activeClass: 'bg-cyan-50 text-cyan-600 ring-cyan-200',
+    },
+    {
+      key: 'clothes',
+      label: '의류',
+      icon: 'fa-solid fa-shirt',
+      iconClass: 'text-blue-500',
+      activeClass: 'bg-blue-50 text-blue-600 ring-blue-200',
+    },
+    {
+      key: 'childcare',
+      label: '육아',
+      icon: 'fa-solid fa-baby',
+      iconClass: 'text-yellow-500',
+      activeClass: 'bg-yellow-50 text-yellow-700 ring-yellow-200',
+    },
+  ],
+  income: [
+    {
+      key: 'salary',
+      label: '월급',
+      icon: 'fa-solid fa-money-bill-wave',
+      iconClass: 'text-emerald-500',
+      activeClass: 'bg-emerald-50 text-emerald-600 ring-emerald-200',
+    },
+    {
+      key: 'side-income',
+      label: '부수입',
+      icon: 'fa-solid fa-sack-dollar',
+      iconClass: 'text-amber-500',
+      activeClass: 'bg-amber-50 text-amber-600 ring-amber-200',
+    },
+    {
+      key: 'allowance',
+      label: '용돈',
+      icon: 'fa-solid fa-piggy-bank',
+      iconClass: 'text-pink-500',
+      activeClass: 'bg-pink-50 text-pink-600 ring-pink-200',
+    },
+    {
+      key: 'bonus',
+      label: '보너스',
+      icon: 'fa-solid fa-gift',
+      iconClass: 'text-rose-500',
+      activeClass: 'bg-rose-50 text-rose-600 ring-rose-200',
+    },
+  ],
+};
+
 /* =========================
  * computed
  * ========================= */
@@ -53,6 +193,10 @@ const displayAmount = computed(() => {
 
 const amountInputWidth = computed(() => {
   return `${Math.max(displayAmount.value.length, 1)}ch`;
+});
+
+const currentCategories = computed(() => {
+  return categoryMap[type.value];
 });
 
 /* =========================
@@ -108,6 +252,14 @@ const blockNonNumericKey = (e) => {
 const addQuickAmount = (value) => {
   const next = parseAmount(amount.value) + value;
   amount.value = String(next);
+};
+
+const selectCategory = (category) => {
+  selectedCategory.value = category.key;
+};
+
+const getSelectedTextClass = (className) => {
+  return className.split(' ').find((token) => token.startsWith('text-'));
 };
 </script>
 
@@ -225,6 +377,46 @@ const addQuickAmount = (value) => {
             +10만원
           </button>
         </div>
+
+        <section class="mt-11 w-full">
+          <h2 class="text-[28px] font-extrabold text-slate-900">카테고리</h2>
+
+          <div class="mt-6 grid grid-cols-4 gap-x-3 gap-y-5">
+            <button
+              v-for="category in currentCategories"
+              :key="category.key"
+              type="button"
+              class="flex flex-col items-center gap-2 text-center"
+              @click="selectCategory(category)"
+            >
+              <span
+                class="flex h-16 w-16 items-center justify-center rounded-[22px] bg-white text-[28px] text-slate-400 ring-1 ring-slate-100 transition"
+                :class="
+                  selectedCategory === category.key
+                    ? category.activeClass
+                    : 'text-slate-400'
+                "
+              >
+                <i
+                  :class="[
+                    category.icon,
+                    selectedCategory === category.key ? '' : category.iconClass,
+                  ]"
+                ></i>
+              </span>
+              <span
+                class="text-[14px] font-medium leading-tight text-slate-400"
+                :class="
+                  selectedCategory === category.key
+                    ? getSelectedTextClass(category.activeClass)
+                    : 'text-slate-400'
+                "
+              >
+                {{ category.label }}
+              </span>
+            </button>
+          </div>
+        </section>
       </div>
     </section>
   </div>
