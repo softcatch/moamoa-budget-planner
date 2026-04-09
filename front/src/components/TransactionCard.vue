@@ -1,7 +1,12 @@
 <script setup>
 import { computed } from 'vue';
+import { categoryMap } from '@/constants/momoCategories.js';
 
 const props = defineProps({
+  id: {
+    type: String,
+    required: true,
+  },
   type: {
     type: String,
     required: true,
@@ -29,26 +34,41 @@ const amountClass = computed(() => {
   return props.type === 'income' ? 'text-emerald-500' : 'text-rose-500';
 });
 
-const typeClass = computed(() => {
-  return props.type === 'income' ? 'text-gray-300' : 'text-slate-900';
+const matchedCategory = computed(() => {
+  const list = categoryMap[props.type] || [];
+
+  return (
+    list.find((item) => item.label === props.category) || {
+      icon: 'fa-solid fa-circle-question',
+      iconClass: 'text-slate-400',
+    }
+  );
 });
 
-const iconText = computed(() => {
-  if (props.category === '식비') return '🍽️';
-  if (props.category === '임금') return '💼';
-  return '💰';
-});
+const categoryIcon = computed(() => matchedCategory.value.icon);
+const categoryIconClass = computed(() => matchedCategory.value.iconClass);
+
+const handleClick = () => {
+  console.log({
+    id: props.id,
+    type: props.type,
+    category: props.category,
+    desc: props.desc,
+    amount: props.amount,
+  });
+};
 </script>
 
 <template>
   <div
-    class="flex items-center justify-between rounded-[28px] bg-white px-5 py-5 shadow-sm"
+    class="flex cursor-pointer items-center justify-between rounded-[28px] bg-white px-5 py-5 shadow-sm"
+    @click="handleClick"
   >
     <div class="flex items-center gap-4">
       <div
-        class="flex h-[30px] w-[30px] items-center justify-center rounded-[20px] bg-slate-50 text-[28px]"
+        class="flex h-[30px] w-[30px] items-center justify-center rounded-[20px] bg-slate-50 text-[20px]"
       >
-        {{ iconText }}
+        <i :class="[categoryIcon, categoryIconClass]"></i>
       </div>
 
       <div>
@@ -68,3 +88,5 @@ const iconText = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped></style>
