@@ -3,12 +3,14 @@
     {
       "id": "1111",
       "username": "12",
-      "password": "12"
+      "password": "12",
+      "name": "테스트 유저1"
     },
     {
       "id": "2222",
       "username": "34",
-      "password": "34"
+      "password": "34",
+      "name": "테스트 유저2"
     }
   ],
   "transactions": [
@@ -237,8 +239,8 @@
       "momoExp": 14,
       "momoLevel": 1,
       "momoMission": "오늘은 굶으세요!",
-      "momoAttendance": 4,
-      "momoFinalAttendance": "2026-04-07"
+      "momoAttendance": 1,
+      "momoFinalAttendance": "2026-04-09"
     },
     {
       "id": "m2",

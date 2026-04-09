@@ -15,10 +15,12 @@ export const useAuthStore = defineStore('auth', () => {
 
   // 로그인 상태
   // currentUserId: 현재 로그인된 유저 id
-  // currentUsername: 현재 로그인된 유저 이름
+  // currentUsername: 현재 로그인된 유저 아이디(username)
+  // currentName: 현재 로그인된 유저 실명(name)
   // isLogin: 로그인 여부
   const currentUserId = ref(null);
   const currentUsername = ref('');
+  const currentName = ref('');
   const isLogin = ref(false);
 
   // 현재 로그인된 유저 정보를 하나의 객체로 제공
@@ -31,6 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
     return {
       userId: currentUserId.value,
       username: currentUsername.value,
+      name: currentName.value,
     };
   });
 
@@ -48,6 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
   const clearAuthState = () => {
     currentUserId.value = null;
     currentUsername.value = '';
+    currentName.value = '';
     isLogin.value = false;
   };
 
@@ -64,6 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
       JSON.stringify({
         userId: currentUserId.value,
         username: currentUsername.value,
+        name: currentName.value,
         isLogin: isLogin.value,
       }),
     );
@@ -73,6 +78,7 @@ export const useAuthStore = defineStore('auth', () => {
   const setAuthState = (user) => {
     currentUserId.value = user.id;
     currentUsername.value = user.username;
+    currentName.value = user.name || user.username || '';
     isLogin.value = true;
     persistAuth();
   };
@@ -105,6 +111,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       currentUserId.value = parsedAuth.userId;
       currentUsername.value = parsedAuth.username;
+      currentName.value = parsedAuth.name || parsedAuth.username;
       isLogin.value = true;
       return true;
     } catch (error) {
@@ -213,6 +220,7 @@ export const useAuthStore = defineStore('auth', () => {
     errorMessage,
     currentUserId,
     currentUsername,
+    currentName,
     isLogin,
     currentUser,
     clearError,
