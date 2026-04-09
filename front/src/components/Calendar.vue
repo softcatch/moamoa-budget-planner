@@ -94,11 +94,6 @@ const getDayTotalClass = (day) => {
 </template>
 
 <style scoped>
-.calendar-wrap {
-  width: 360px;
-  max-width: 100%;
-}
-
 .day-cell {
   min-height: 44px;
   display: flex;
@@ -133,5 +128,9 @@ const getDayTotalClass = (day) => {
   position: absolute;
   top: 4px;
   right: 6px;
+}
+:deep(.vc-container) {
+  transform: scale(1.4);
+  transform-origin: top center;
 }
 </style>
