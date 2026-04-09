@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue';
 import { categoryMap } from '@/constants/momoCategories.js';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const props = defineProps({
   id: {
@@ -49,25 +51,21 @@ const categoryIcon = computed(() => matchedCategory.value.icon);
 const categoryIconClass = computed(() => matchedCategory.value.iconClass);
 
 const handleClick = () => {
-  console.log({
-    id: props.id,
-    type: props.type,
-    category: props.category,
-    desc: props.desc,
-    amount: props.amount,
+  router.push({
+    name: 'momo/edit', // router의 index.js에 정의해둔 라우트 name
+    query: {
+      mode: 'edit',
+      id: props.id // 클릭한 카드의 id를 쿼리로 전달
+    }
   });
 };
 </script>
 
 <template>
-  <div
-    class="flex cursor-pointer items-center justify-between rounded-[28px] bg-white px-5 py-5 shadow-sm"
-    @click="handleClick"
-  >
+  <div class="flex cursor-pointer items-center justify-between rounded-[28px] bg-white px-5 py-5 shadow-sm"
+    @click="handleClick">
     <div class="flex items-center gap-4">
-      <div
-        class="flex h-[30px] w-[30px] items-center justify-center rounded-[20px] bg-slate-50 text-[20px]"
-      >
+      <div class="flex h-[30px] w-[30px] items-center justify-center rounded-[20px] bg-slate-50 text-[20px]">
         <i :class="[categoryIcon, categoryIconClass]"></i>
       </div>
 
