@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 import Calendar from '@/components/Calendar.vue';
 import AppHeader from '@/components/AppHeader.vue';
@@ -7,15 +7,25 @@ import TransactionCard from '@/components/TransactionCard.vue';
 import calendarIcon from '@/assets/calendar.png';
 import { useMomoStore } from '@/stores/momo';
 import NavBar from '@/components/NavBar.vue';
+import { useAuthStore } from '@/stores/auth';
 
 const momoStore = useMomoStore();
+const authStore = useAuthStore();
 
 const selectedDate = ref(new Date(2026, 3, 8));
-const currentUserId = ref('1111');
 
-onMounted(() => {
-  momoStore.fetchTransactionList(currentUserId.value);
-});
+watch(
+  () => authStore.currentUserId,
+  (userId) => {
+    if (!userId) {
+      momoStore.transactionList = [];
+      return;
+    }
+
+    momoStore.fetchTransactionList(userId);
+  },
+  { immediate: true },
+);
 
 const userTransactions = computed(() => momoStore.transactionList);
 
