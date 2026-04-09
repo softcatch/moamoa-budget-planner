@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
@@ -22,6 +22,7 @@ const amountInput = ref(null);
 const amount = ref('');
 const memo = ref('');
 const isSubmitting = ref(false);
+const inlineErrorMessage = ref('');
 const formError = reactive({
   amount: '',
   category: '',
@@ -268,6 +269,7 @@ const changeType = (newType) => {
   type.value = newType;
   selectedCategory.value = null;
   formError.category = '';
+  inlineErrorMessage.value = '';
 };
 
 const toggleCalendar = () => {
@@ -277,10 +279,12 @@ const toggleCalendar = () => {
 const handleDateSelect = (date) => {
   selectedDate.value = date;
   showCalendar.value = false;
+  inlineErrorMessage.value = '';
 };
 
 const handleAmountInput = (e) => {
   amount.value = sanitizeAmount(e.target.value);
+  inlineErrorMessage.value = '';
 
   if (parseAmount(amount.value)) {
     formError.amount = '';
@@ -295,22 +299,10 @@ const selectAmountOnEmpty = () => {
   });
 };
 
-const blockNonNumericKey = (e) => {
-  const allowedKeys = [
-    'Backspace',
-    'Delete',
-    'ArrowLeft',
-    'ArrowRight',
-    'ArrowUp',
-    'ArrowDown',
-    'Tab',
-    'Home',
-    'End',
-  ];
-
-  if (e.ctrlKey || e.metaKey) return;
-  if (allowedKeys.includes(e.key)) return;
-  if (/^[0-9]$/.test(e.key)) return;
+const handleAmountBeforeInput = (e) => {
+  if (!e.inputType?.startsWith('insert')) return;
+  if (!e.data) return;
+  if (/^\d+$/.test(e.data)) return;
 
   e.preventDefault();
 };
@@ -319,11 +311,13 @@ const addQuickAmount = (value) => {
   const next = parseAmount(amount.value) + value;
   amount.value = String(next);
   formError.amount = '';
+  inlineErrorMessage.value = '';
 };
 
 const selectCategory = (category) => {
   selectedCategory.value = category.key;
   formError.category = '';
+  inlineErrorMessage.value = '';
 };
 
 const getSelectedTextClass = (className) => {
@@ -360,6 +354,7 @@ const resetForm = () => {
   selectedDate.value = new Date();
   amount.value = '';
   memo.value = '';
+  inlineErrorMessage.value = '';
   formError.amount = '';
   formError.category = '';
 };
@@ -396,10 +391,11 @@ const hydrateEditForm = async () => {
   );
 
   if (!targetTransaction) {
-    window.alert('수정할 거래를 찾을 수 없습니다.');
+    inlineErrorMessage.value = '수정할 거래를 찾을 수 없습니다.';
     return;
   }
 
+  inlineErrorMessage.value = '';
   applyTransactionToForm(targetTransaction);
 };
 
@@ -420,31 +416,25 @@ const validateForm = () => {
 
 const submitForm = async () => {
   if (isSubmitting.value) return;
+
+  inlineErrorMessage.value = '';
+
   if (!validateForm()) return;
+
   if (!authStore.currentUserId) {
-    window.alert('로그인 정보가 없습니다.');
-    return;
-  }
-
-  if (!selectedCategory.value) {
-    window.alert('카테고리를 선택해주세요.');
-    return;
-  }
-
-  if (!parseAmount(amount.value)) {
-    window.alert('금액을 입력해주세요.');
+    inlineErrorMessage.value = '로그인 정보가 없습니다.';
     return;
   }
 
   const payload = transactionPayload.value;
 
   if (!payload) {
-    window.alert('전송할 데이터를 만들 수 없습니다.');
+    inlineErrorMessage.value = '전송할 데이터를 만들 수 없습니다.';
     return;
   }
 
   if (isEditMode.value && !editingTransactionId.value) {
-    window.alert('수정할 거래 ID가 없습니다.');
+    inlineErrorMessage.value = '수정할 거래 ID가 없습니다.';
     return;
   }
 
@@ -457,11 +447,12 @@ const submitForm = async () => {
       await momoStore.addTransactionData(payload);
     }
 
+    inlineErrorMessage.value = '';
     await momoStore.fetchTransactionList(authStore.currentUserId);
     router.back();
   } catch (error) {
     console.error('submitForm error:', error);
-    window.alert('저장 중 오류가 발생했습니다.');
+    inlineErrorMessage.value = '저장 중 오류가 발생했습니다.';
   } finally {
     isSubmitting.value = false;
   }
@@ -579,7 +570,7 @@ watch(
             :style="{ width: amountInputWidth }"
             class="min-w-[1ch] border-none bg-transparent p-0 text-center text-[40px] leading-[1] font-normal text-slate-900 outline-none"
             @input="handleAmountInput"
-            @keydown="blockNonNumericKey"
+            @beforeinput="handleAmountBeforeInput"
             @focus="selectAmountOnEmpty"
             @click="selectAmountOnEmpty"
           />
@@ -617,7 +608,6 @@ watch(
           </button>
         </div>
 
-        <!-- 카테고리 목록 -->
         <p
           v-if="formError.amount"
           class="mt-4 w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
@@ -678,6 +668,13 @@ watch(
             />
           </div>
         </section>
+
+        <p
+          v-if="inlineErrorMessage"
+          class="mt-4 w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
+        >
+          {{ inlineErrorMessage }}
+        </p>
 
         <section v-if="isEditMode" class="mt-8 w-full">
           <button
