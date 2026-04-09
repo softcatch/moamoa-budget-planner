@@ -34,15 +34,37 @@ const displayExp = computed(() => (isLoggedIn.value ? momoStore.momoExp : 0));
 const displayIsHappy = computed(() =>
   isLoggedIn.value ? momoStore.isMomoHappy : true,
 );
+const hasActiveMission = computed(() => {
+  return Boolean(
+    momoStore.momoMission?.trim() && momoStore.momoMissionAssignedAt,
+  );
+});
 const todayString = computed(() => formatDate(new Date()));
 const hasMissionForToday = computed(() => {
   return (
+    hasActiveMission.value &&
+    !momoStore.momoMissionSettled &&
     momoStore.momoMissionAssignedAt === todayString.value &&
     Boolean(momoStore.momoMission?.trim())
   );
 });
+const needsMissionSettlement = computed(() => {
+  return (
+    hasActiveMission.value &&
+    !momoStore.momoMissionSettled &&
+    momoStore.momoMissionAssignedAt < todayString.value
+  );
+});
 const missionText = computed(() => {
-  return hasMissionForToday.value ? momoStore.momoMission.trim() : '';
+  if (needsMissionSettlement.value) {
+    return '미션 정산하기';
+  }
+
+  if (hasMissionForToday.value) {
+    return `${momoStore.momoMission.trim()} 절약하기`;
+  }
+
+  return '';
 });
 const hasCheckedInToday = computed(() => {
   return momoStore.momoFinalAttendance === formatDate(new Date());
@@ -77,6 +99,34 @@ const getDiffDays = (fromDate, toDate) => {
   return Math.round((to - from) / msPerDay);
 };
 
+const getAttendanceRewardExp = (attendance) => {
+  if (attendance <= 1) {
+    return 10;
+  }
+
+  if (attendance === 2) {
+    return 30;
+  }
+
+  if (attendance === 3) {
+    return 50;
+  }
+
+  if (attendance === 4) {
+    return 70;
+  }
+
+  if (attendance === 5) {
+    return 80;
+  }
+
+  if (attendance === 6) {
+    return 90;
+  }
+
+  return 100;
+};
+
 const fetchHomeData = async (userId) => {
   if (!userId) {
     return;
@@ -106,10 +156,13 @@ const handleAttendance = async () => {
     }
   }
 
+  const nextExp = momoStore.momoExp + getAttendanceRewardExp(nextAttendance);
+
   await momoStore.updateMomoAttendance(
     effectiveUserId.value,
     nextAttendance,
     todayString,
+    nextExp,
   );
 };
 
@@ -217,8 +270,9 @@ onMounted(() => {
 
     <MissionDetail
       :modelValue="isMissionModalOpen"
-      :missionText="missionText"
+      :missionCategory="momoStore.momoMission"
       :missionAssignedAt="momoStore.momoMissionAssignedAt"
+      :needsSettlement="needsMissionSettlement"
       :userId="effectiveUserId"
       @close="isMissionModalOpen = false"
       @update:modelValue="isMissionModalOpen = $event"

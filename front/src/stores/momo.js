@@ -4,6 +4,7 @@ import { ref } from 'vue';
 
 export const useMomoStore = defineStore('momo', () => {
   const BASE_URL = '/api';
+  const LEVEL_EXP_UNIT = 1000;
 
   // 로딩 및 에러 상태
   const isFetching = ref(false);
@@ -15,6 +16,7 @@ export const useMomoStore = defineStore('momo', () => {
   const momoLevel = ref(1);
   const momoMission = ref('');
   const momoMissionAssignedAt = ref('');
+  const momoMissionSettled = ref(true);
   const momoAttendance = ref(0);
   const momoFinalAttendance = ref('');
   const currentMomoUserId = ref(null);
@@ -24,12 +26,17 @@ export const useMomoStore = defineStore('momo', () => {
   // 배열 전체를 받아와 교체하는 경우가 많으므로 ref 사용
   const transactionList = ref([]);
 
+  const getLevelFromExp = (exp) => {
+    return Math.floor(Math.max(exp, 0) / LEVEL_EXP_UNIT) + 1;
+  };
+
   const resetMomoData = () => {
     isMomoHappy.value = true;
     momoExp.value = 0;
     momoLevel.value = 1;
     momoMission.value = '';
     momoMissionAssignedAt.value = '';
+    momoMissionSettled.value = true;
     momoAttendance.value = 0;
     momoFinalAttendance.value = '';
     momoDataId.value = null;
@@ -74,9 +81,10 @@ export const useMomoStore = defineStore('momo', () => {
       momoDataId.value = momoData.id;
       isMomoHappy.value = momoData.isMomoHappy;
       momoExp.value = momoData.momoExp;
-      momoLevel.value = momoData.momoLevel;
+      momoLevel.value = getLevelFromExp(momoData.momoExp ?? 0);
       momoMission.value = momoData.momoMission;
       momoMissionAssignedAt.value = momoData.momoMissionAssignedAt ?? '';
+      momoMissionSettled.value = momoData.momoMissionSettled ?? true;
       momoAttendance.value = momoData.momoAttendance;
       momoFinalAttendance.value = momoData.momoFinalAttendance;
     } catch (error) {
@@ -126,13 +134,15 @@ export const useMomoStore = defineStore('momo', () => {
       const targetMomoDataId = await ensureMomoDataId(userId);
 
       if (!targetMomoDataId) {
+        const initialExp = payload.momoExp ?? 0;
         const createdMomoData = await createMomoData({
           userId,
           isMomoHappy: payload.isMomoHappy ?? true,
-          momoExp: payload.momoExp ?? 0,
-          momoLevel: payload.momoLevel ?? 1,
+          momoExp: initialExp,
+          momoLevel: payload.momoLevel ?? getLevelFromExp(initialExp),
           momoMission: payload.momoMission ?? '',
           momoMissionAssignedAt: payload.momoMissionAssignedAt ?? '',
+          momoMissionSettled: payload.momoMissionSettled ?? true,
           momoAttendance: payload.momoAttendance ?? 0,
           momoFinalAttendance: payload.momoFinalAttendance ?? '',
         });
@@ -140,7 +150,13 @@ export const useMomoStore = defineStore('momo', () => {
         return createdMomoData;
       }
 
-      const response = await axios.patch(`${BASE_URL}/momoData/${targetMomoDataId}`, payload);
+      const normalizedPayload = { ...payload };
+
+      if (normalizedPayload.momoExp !== undefined && normalizedPayload.momoLevel === undefined) {
+        normalizedPayload.momoLevel = getLevelFromExp(normalizedPayload.momoExp);
+      }
+
+      const response = await axios.patch(`${BASE_URL}/momoData/${targetMomoDataId}`, normalizedPayload);
       momoDataId.value = response.data.id;
       currentMomoUserId.value = response.data.userId;
       await fetchMomoData(userId);
@@ -164,9 +180,10 @@ export const useMomoStore = defineStore('momo', () => {
     return await editMomoData(userId, { momoLevel: level });
   };
 
-  const updateMomoMission = async (userId, mission, assignedAt) => {
+  const updateMomoMission = async (userId, missionCategory, assignedAt) => {
     const payload = {
-      momoMission: mission,
+      momoMission: missionCategory,
+      momoMissionSettled: false,
     };
 
     if (assignedAt !== undefined) {
@@ -176,13 +193,50 @@ export const useMomoStore = defineStore('momo', () => {
     return await editMomoData(userId, payload);
   };
 
-  const updateMomoAttendance = async (userId, attendance, finalAttendance) => {
+  const settleMomoMission = async (
+    userId,
+    { missionCategory, missionAssignedAt },
+  ) => {
+    const response = await axios.get(`${BASE_URL}/transactions`, {
+      params: {
+        userId,
+        date: missionAssignedAt,
+        type: 'expense',
+        category: missionCategory,
+      },
+    });
+
+    const isSuccess = response.data.length === 0;
+
+    const payload = {
+      momoMission: '',
+      momoMissionAssignedAt: '',
+      momoMissionSettled: true,
+    };
+
+    if (isSuccess) {
+      payload.momoExp = momoExp.value + 300;
+    }
+
+    await editMomoData(userId, payload);
+
+    return {
+      isSuccess,
+      matchedTransactions: response.data,
+    };
+  };
+
+  const updateMomoAttendance = async (userId, attendance, finalAttendance, exp) => {
     const payload = {
       momoAttendance: attendance,
     };
 
     if (finalAttendance !== undefined) {
       payload.momoFinalAttendance = finalAttendance;
+    }
+
+    if (exp !== undefined) {
+      payload.momoExp = exp;
     }
 
     return await editMomoData(userId, payload);
@@ -230,6 +284,7 @@ export const useMomoStore = defineStore('momo', () => {
     momoLevel,
     momoMission,
     momoMissionAssignedAt,
+    momoMissionSettled,
     momoAttendance,
     momoFinalAttendance,
     currentMomoUserId,
@@ -243,6 +298,7 @@ export const useMomoStore = defineStore('momo', () => {
     updateMomoExp,
     updateMomoLevel,
     updateMomoMission,
+    settleMomoMission,
     updateMomoAttendance,
     fetchMomoData,
     fetchTransactionList,

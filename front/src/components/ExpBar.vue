@@ -12,8 +12,10 @@ const props = defineProps({
   },
 });
 
-const currentExp = computed(() => props.exp % 100);
-const progressWidth = computed(() => `${Math.min(currentExp.value, 100)}%`);
+const LEVEL_EXP_UNIT = 1000;
+const currentExp = computed(() => props.exp % LEVEL_EXP_UNIT);
+const remainingExp = computed(() => LEVEL_EXP_UNIT - currentExp.value);
+const progressWidth = computed(() => `${Math.min((currentExp.value / LEVEL_EXP_UNIT) * 100, 100)}%`);
 </script>
 
 <template>
@@ -35,7 +37,7 @@ const progressWidth = computed(() => `${Math.min(currentExp.value, 100)}%`);
 
     <div class="mt-2 flex items-center justify-between text-xs font-medium text-slate-500">
       <span>현재 {{ currentExp }} EXP</span>
-      <span>다음 레벨까지 100 EXP</span>
+      <span>다음 레벨까지 {{ remainingExp }} EXP</span>
     </div>
   </section>
 </template>

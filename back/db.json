@@ -236,12 +236,13 @@
       "id": "m1",
       "userId": "1111",
       "isMomoHappy": false,
-      "momoExp": 14,
-      "momoLevel": 1,
-      "momoMission": "생필품 절약하기",
-      "momoAttendance": 3,
-      "momoFinalAttendance": "2026-04-08",
-      "momoMissionAssignedAt": "2026-04-08"
+      "momoExp": 1190,
+      "momoLevel": 2,
+      "momoMission": "",
+      "momoAttendance": 6,
+      "momoFinalAttendance": "2026-04-10",
+      "momoMissionAssignedAt": "",
+      "momoMissionSettled": true
     },
     {
       "id": "m2",
@@ -249,10 +250,11 @@
       "isMomoHappy": false,
       "momoExp": 103053,
       "momoLevel": 100,
-      "momoMission": "오늘은 걸어다니세요!",
+      "momoMission": "식비",
       "momoAttendance": 53,
       "momoFinalAttendance": "2026-04-07",
-      "momoMissionAssignedAt": "2026-04-08"
+      "momoMissionAssignedAt": "2026-04-08",
+      "momoMissionSettled": false
     }
   ]
 }
