@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useMomoStore } from '@/stores/momo';
@@ -22,6 +22,10 @@ const amountInput = ref(null);
 const amount = ref('');
 const memo = ref('');
 const isSubmitting = ref(false);
+const formError = reactive({
+  amount: '',
+  category: '',
+});
 
 const categoryMap = {
   expense: [
@@ -249,6 +253,7 @@ const changeType = (newType) => {
   if (type.value === newType) return;
   type.value = newType;
   selectedCategory.value = null;
+  formError.category = '';
 };
 
 const toggleCalendar = () => {
@@ -262,6 +267,10 @@ const handleDateSelect = (date) => {
 
 const handleAmountInput = (e) => {
   amount.value = sanitizeAmount(e.target.value);
+
+  if (parseAmount(amount.value)) {
+    formError.amount = '';
+  }
 };
 
 const selectAmountOnEmpty = () => {
@@ -295,22 +304,85 @@ const blockNonNumericKey = (e) => {
 const addQuickAmount = (value) => {
   const next = parseAmount(amount.value) + value;
   amount.value = String(next);
+  formError.amount = '';
 };
 
 const selectCategory = (category) => {
   selectedCategory.value = category.key;
+  formError.category = '';
 };
 
 const getSelectedTextClass = (className) => {
   return className.split(' ').find((token) => token.startsWith('text-'));
 };
 
+const resetForm = () => {
+  type.value = 'expense';
+  selectedCategory.value = null;
+  selectedDate.value = new Date();
+  amount.value = '';
+  memo.value = '';
+  formError.amount = '';
+  formError.category = '';
+};
+
+const applyTransactionToForm = (transaction) => {
+  type.value = transaction.type;
+  selectedCategory.value = transaction.category;
+  amount.value = String(transaction.amount ?? '');
+  memo.value = transaction.desc ?? '';
+
+  if (transaction.date) {
+    selectedDate.value = new Date(`${transaction.date}T00:00:00`);
+  }
+};
+
+const hydrateEditForm = async () => {
+  if (!isEditMode.value) {
+    resetForm();
+    return;
+  }
+
+  if (!editingTransactionId.value || !authStore.currentUserId) {
+    return;
+  }
+
+  if (!momoStore.transactionList.length) {
+    await momoStore.fetchTransactionList(authStore.currentUserId);
+  }
+
+  const targetTransaction = momoStore.transactionList.find(
+    (transaction) =>
+      String(transaction.id) === String(editingTransactionId.value) &&
+      String(transaction.userId) === String(authStore.currentUserId),
+  );
+
+  if (!targetTransaction) {
+    window.alert('수정할 거래를 찾을 수 없습니다.');
+    return;
+  }
+
+  applyTransactionToForm(targetTransaction);
+};
+
 const goBack = () => {
   router.back();
 };
 
+const validateForm = () => {
+  formError.amount = parseAmount(amount.value)
+    ? ''
+    : '금액을 입력해주세요.';
+  formError.category = selectedCategory.value
+    ? ''
+    : '카테고리를 선택해주세요.';
+
+  return !formError.amount && !formError.category;
+};
+
 const submitForm = async () => {
   if (isSubmitting.value) return;
+  if (!validateForm()) return;
   if (!authStore.currentUserId) {
     window.alert('로그인 정보가 없습니다.');
     return;
@@ -356,6 +428,22 @@ const submitForm = async () => {
     isSubmitting.value = false;
   }
 };
+
+onMounted(async () => {
+  await hydrateEditForm();
+});
+
+watch(
+  () => [
+    route.query.mode,
+    route.query.transactionId,
+    route.query.id,
+    authStore.currentUserId,
+  ],
+  async () => {
+    await hydrateEditForm();
+  },
+);
 </script>
 
 <template>
@@ -492,6 +580,13 @@ const submitForm = async () => {
         </div>
 
         <!-- 카테고리 목록 -->
+        <p
+          v-if="formError.amount"
+          class="mt-4 w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
+        >
+          {{ formError.amount }}
+        </p>
+
         <section class="mt-11 w-full">
           <h2 class="text-[28px] font-extrabold text-slate-900">카테고리</h2>
 
@@ -530,6 +625,13 @@ const submitForm = async () => {
               </span>
             </button>
           </div>
+
+          <p
+            v-if="formError.category"
+            class="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
+          >
+            {{ formError.category }}
+          </p>
         </section>
 
         <!-- 메모 -->
