@@ -134,6 +134,13 @@ const categoryMap = {
       iconClass: 'text-yellow-500',
       activeClass: 'bg-yellow-50 text-yellow-700 ring-yellow-200',
     },
+    {
+      key: 'etc-expense',
+      label: '기타',
+      icon: 'fa-solid fa-ellipsis',
+      iconClass: 'text-slate-500',
+      activeClass: 'bg-slate-100 text-slate-700 ring-slate-300',
+    },
   ],
   income: [
     {
@@ -163,6 +170,13 @@ const categoryMap = {
       icon: 'fa-solid fa-gift',
       iconClass: 'text-rose-500',
       activeClass: 'bg-rose-50 text-rose-600 ring-rose-200',
+    },
+    {
+      key: 'etc-income',
+      label: '기타',
+      icon: 'fa-solid fa-ellipsis',
+      iconClass: 'text-slate-500',
+      activeClass: 'bg-slate-100 text-slate-700 ring-slate-300',
     },
   ],
 };
