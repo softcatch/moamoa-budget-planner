@@ -56,6 +56,177 @@
       "amount": 400000,
       "desc": "맛있는 저녁",
       "category": "식비"
+    },
+    {
+      "id": "t6",
+      "userId": "1111",
+      "date": "2026-04-06",
+      "type": "expense",
+      "amount": 12000,
+      "desc": "점심 식사",
+      "category": "식비"
+    },
+    {
+      "id": "t7",
+      "userId": "1111",
+      "date": "2026-04-05",
+      "type": "expense",
+      "amount": 3500,
+      "desc": "버스",
+      "category": "교통"
+    },
+    {
+      "id": "t8",
+      "userId": "1111",
+      "date": "2026-04-04",
+      "type": "expense",
+      "amount": 60000,
+      "desc": "전기요금",
+      "category": "공과금"
+    },
+    {
+      "id": "t9",
+      "userId": "1111",
+      "date": "2026-04-03",
+      "type": "expense",
+      "amount": 20000,
+      "desc": "약국",
+      "category": "의료비"
+    },
+    {
+      "id": "t10",
+      "userId": "1111",
+      "date": "2026-04-02",
+      "type": "expense",
+      "amount": 45000,
+      "desc": "헬스장",
+      "category": "취미활동"
+    },
+    {
+      "id": "t11",
+      "userId": "1111",
+      "date": "2026-04-01",
+      "type": "expense",
+      "amount": 18000,
+      "desc": "마트 장보기",
+      "category": "생필품"
+    },
+    {
+      "id": "t12",
+      "userId": "1111",
+      "date": "2026-03-31",
+      "type": "expense",
+      "amount": 70000,
+      "desc": "온라인 강의",
+      "category": "교육"
+    },
+    {
+      "id": "t13",
+      "userId": "1111",
+      "date": "2026-03-30",
+      "type": "expense",
+      "amount": 9900,
+      "desc": "넷플릭스",
+      "category": "구독료"
+    },
+    {
+      "id": "t14",
+      "userId": "1111",
+      "date": "2026-03-29",
+      "type": "expense",
+      "amount": 55000,
+      "desc": "통신요금",
+      "category": "통신비"
+    },
+    {
+      "id": "t15",
+      "userId": "1111",
+      "date": "2026-03-28",
+      "type": "expense",
+      "amount": 30000,
+      "desc": "미용실",
+      "category": "미용"
+    },
+    {
+      "id": "t16",
+      "userId": "1111",
+      "date": "2026-03-27",
+      "type": "expense",
+      "amount": 6000,
+      "desc": "카페",
+      "category": "카페/간식"
+    },
+    {
+      "id": "t17",
+      "userId": "1111",
+      "date": "2026-03-26",
+      "type": "expense",
+      "amount": 50000,
+      "desc": "선물",
+      "category": "경조사/선물"
+    },
+    {
+      "id": "t18",
+      "userId": "1111",
+      "date": "2026-03-25",
+      "type": "expense",
+      "amount": 200000,
+      "desc": "여행 숙박",
+      "category": "여행"
+    },
+    {
+      "id": "t19",
+      "userId": "1111",
+      "date": "2026-03-24",
+      "type": "expense",
+      "amount": 80000,
+      "desc": "옷 구매",
+      "category": "의류"
+    },
+    {
+      "id": "t20",
+      "userId": "1111",
+      "date": "2026-03-23",
+      "type": "expense",
+      "amount": 40000,
+      "desc": "육아용품",
+      "category": "육아"
+    },
+    {
+      "id": "t21",
+      "userId": "1111",
+      "date": "2026-04-08",
+      "type": "income",
+      "amount": 2500000,
+      "desc": "월급",
+      "category": "월급"
+    },
+    {
+      "id": "t22",
+      "userId": "1111",
+      "date": "2026-04-02",
+      "type": "income",
+      "amount": 150000,
+      "desc": "프리랜서",
+      "category": "부수입"
+    },
+    {
+      "id": "t23",
+      "userId": "1111",
+      "date": "2026-03-30",
+      "type": "income",
+      "amount": 50000,
+      "desc": "용돈",
+      "category": "용돈"
+    },
+    {
+      "id": "t24",
+      "userId": "1111",
+      "date": "2026-03-28",
+      "type": "income",
+      "amount": 300000,
+      "desc": "성과급",
+      "category": "보너스"
     }
   ],
   "momoData": [
