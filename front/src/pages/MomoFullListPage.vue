@@ -66,39 +66,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <AppHeader
-    title="목록"
-    subtitle="전체 거래 내역을 날짜별로 확인할 수 있어요"
-    :iconSrc="calendarIcon"
-    iconAlt="list icon"
-  />
+  <AppHeader title="목록" subtitle="전체 거래 내역을 날짜별로 확인할 수 있어요" :iconSrc="calendarIcon" iconAlt="list icon" />
 
-  <div
-    class="relative w-[480px] min-h-[844px] overflow-hidden rounded-[32px] bg-[#F4F7F6] px-6 pt-[110px] pb-[100px]"
-  >
-    <div class="mt-6 space-y-6">
+  <div class="max-w-[480px] mx-auto bg-[#F8F9FA] min-h-screen px-5 pt-[110px] pb-[80px] relative font-sans">
+
+    <div class="space-y-6">
       <template v-if="groupedTransactions.length > 0">
-        <section
-          v-for="group in groupedTransactions"
-          :key="group.date"
-          class="space-y-4"
-        >
-          <div
-            :id="makeDateAnchorId(group.date)"
-            class="inline-flex rounded-full bg-[#EDECF3] px-5 py-3 text-[18px] font-bold text-slate-500"
-          >
+        <section v-for="group in groupedTransactions" :key="group.date" class="space-y-4">
+          <div :id="makeDateAnchorId(group.date)"
+            class="inline-flex rounded-full bg-white px-5 py-2.5 text-[15px] font-bold text-slate-600 shadow-sm">
             {{ formatDateLabel(group.date) }}
           </div>
 
           <div class="space-y-4">
-            <TransactionCard
-              v-for="item in group.items"
-              :id="item.id"
-              :type="item.type"
-              :category="item.category"
-              :desc="item.desc"
-              :amount="item.amount"
-            />
+            <TransactionCard v-for="item in group.items" :id="item.id" :key="item.id" :type="item.type"
+              :category="item.category" :desc="item.desc" :amount="item.amount" />
           </div>
         </section>
       </template>

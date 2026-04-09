@@ -21,8 +21,7 @@ defineProps({
 
 <template>
   <div
-    class="fixed top-0 w-full max-w-[480px] bg-[#F4F7F6] px-6 pt-6 pb-4 z-[100] flex items-start justify-between"
-  >
+    class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-[#F4F7F6] px-6 pt-6 pb-4 z-[100] flex items-start justify-between">
     <div class="pr-4">
       <h1 class="text-[28px] leading-none font-bold text-slate-900">
         {{ title }}
@@ -32,9 +31,7 @@ defineProps({
       </p>
     </div>
 
-    <div
-      class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100"
-    >
+    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100">
       <img :src="iconSrc" :alt="iconAlt" class="h-6 w-6 object-contain" />
     </div>
   </div>

@@ -105,24 +105,14 @@ const monthLabel = computed(() => {
 </script>
 
 <template>
-  <AppHeader
-    title="월간"
-    subtitle="날짜를 누르면 하단에 해당 일자 내역이 보여요"
-    :iconSrc="calendarIcon"
-    iconAlt="calendar icon"
-  />
-  <div
-    class="relative w-[480px] min-h-[844px] overflow-hidden rounded-[32px] bg-[#F4F7F6] px-6 pt-[110px] pb-[100px]"
-  >
+  <AppHeader title="월간" subtitle="날짜를 누르면 하단에 해당 일자 내역이 보여요" :iconSrc="calendarIcon" iconAlt="calendar icon" />
+  <div class="max-w-[480px] mx-auto bg-[#F8F9FA] min-h-screen px-5 pt-[110px] pb-[80px] relative font-sans">
     <div class="mt-4 rounded-[24px] bg-white p-6 shadow-sm">
       <div class="flex items-center justify-between">
         <span class="text-base font-bold text-slate-900 ml-10">
           {{ monthLabel }}
         </span>
-        <span
-          class="text-[24px] font-bold mr-10"
-          :class="monthlyNet >= 0 ? 'text-emerald-500' : 'text-rose-500'"
-        >
+        <span class="text-[24px] font-bold mr-10" :class="monthlyNet >= 0 ? 'text-emerald-500' : 'text-rose-500'">
           {{ formatSignedWon(monthlyNet) }}
         </span>
       </div>
@@ -145,45 +135,30 @@ const monthLabel = computed(() => {
     </div>
 
     <div class="mt-4 rounded-[24px] bg-white p-4 shadow-sm">
-      <Calendar
-        :selectedDate="selectedDate"
-        :dailyTotalsMap="dailyTotalsMap"
-        @select-date="onSelectDate"
-      />
+      <Calendar :selectedDate="selectedDate" :dailyTotalsMap="dailyTotalsMap" @select-date="onSelectDate" />
 
       <div class="mt-35 flex items-center justify-between">
         <h2 class="ml-4 text-base font-semibold text-slate-900">
           {{ formattedDateForPrint }}
         </h2>
 
-        <router-link
-          :to="{
-            name: 'momo/full-list',
-            hash: `#date-${formattedDate}`,
-          }"
-          class="mr-2 flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-xs font-semibold text-emerald-600 no-underline"
-        >
+        <router-link :to="{
+          name: 'momo/full-list',
+          hash: `#date-${formattedDate}`,
+        }"
+          class="mr-2 flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-xs font-semibold text-emerald-600 no-underline">
           <span class="text-xs">≡</span>
           목록 보기
         </router-link>
       </div>
 
       <div class="mt-4 space-y-3">
-        <p
-          v-if="selectedDateTransactions.length === 0"
-          class="text-center text-sm text-slate-500"
-        >
+        <p v-if="selectedDateTransactions.length === 0" class="text-center text-sm text-slate-500">
           해당 날짜 내역이 없습니다.
         </p>
 
-        <TransactionCard
-          v-for="item in selectedDateTransactions"
-          :id="item.id"
-          :type="item.type"
-          :category="item.category"
-          :desc="item.desc"
-          :amount="item.amount"
-        />
+        <TransactionCard v-for="item in selectedDateTransactions" :id="item.id" :type="item.type"
+          :category="item.category" :desc="item.desc" :amount="item.amount" />
       </div>
     </div>
   </div>

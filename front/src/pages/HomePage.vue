@@ -146,21 +146,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#eaf3ef] px-4 py-5 text-slate-900">
+  <main class="max-w-[480px] mx-auto bg-[#F8F9FA] min-h-screen px-5 pt-5 pb-[80px] relative font-sans text-slate-900">
     <section
-      class="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full max-w-[390px] flex-col rounded-[32px] border border-white/70 bg-[#f4f7f6] p-5 shadow-[0_18px_60px_rgba(15,23,42,0.10)]"
-    >
+      class="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full max-w-[390px] flex-col rounded-[32px] border border-white/70 bg-[#f4f7f6] p-5 shadow-[0_18px_60px_rgba(15,23,42,0.10)]">
       <header class="mb-5 flex items-center justify-between gap-4">
         <h1 class="text-[28px] font-bold leading-tight text-slate-900">
           반가워요, {{ displayName }}님
         </h1>
 
-        <button
-          v-if="isLoggedIn"
-          type="button"
+        <button v-if="isLoggedIn" type="button"
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm transition active:scale-95"
-          @click="openLogoutModal"
-        >
+          @click="openLogoutModal">
           <i class="fas fa-right-from-bracket text-[18px]"></i>
         </button>
       </header>
@@ -173,43 +169,26 @@ onMounted(() => {
         </div>
 
         <div class="mt-5 grid grid-cols-2 gap-3">
-          <Attendance
-            :checkedInToday="hasCheckedInToday"
-            :attendance="momoStore.momoAttendance"
-            :loading="momoStore.isFetching"
-            @attend="handleAttendance"
-          />
+          <Attendance :checkedInToday="hasCheckedInToday" :attendance="momoStore.momoAttendance"
+            :loading="momoStore.isFetching" @attend="handleAttendance" />
 
-          <Mission
-            :missionText="missionText"
-            @open="isMissionModalOpen = true"
-          />
+          <Mission :missionText="missionText" @open="isMissionModalOpen = true" />
         </div>
       </template>
 
-      <button
-        v-else
-        type="button"
+      <button v-else type="button"
         class="mt-5 flex min-h-[140px] w-full items-center justify-center rounded-[28px] bg-[linear-gradient(135deg,#38d39f_0%,#1fb6a6_100%)] px-6 text-center text-xl font-bold text-white shadow-[0_18px_40px_rgba(31,182,166,0.28)] transition active:scale-[0.99]"
-        @click="goToLogin"
-      >
+        @click="goToLogin">
         로그인하고 모모 키우기
       </button>
     </section>
 
-    <MissionDetail
-      :modelValue="isMissionModalOpen"
-      :missionText="missionText"
-      @close="isMissionModalOpen = false"
-      @update:modelValue="isMissionModalOpen = $event"
-    />
+    <MissionDetail :modelValue="isMissionModalOpen" :missionText="missionText" @close="isMissionModalOpen = false"
+      @update:modelValue="isMissionModalOpen = $event" />
 
     <teleport to="body">
-      <div
-        v-if="isLogoutModalOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4"
-        @click.self="closeLogoutModal"
-      >
+      <div v-if="isLogoutModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4"
+        @click.self="closeLogoutModal">
         <section class="w-full max-w-[340px] rounded-[28px] bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.24)]">
           <h2 class="text-xl font-bold text-slate-900">로그아웃 하시겠습니까?</h2>
           <p class="mt-2 text-sm text-slate-500">
@@ -217,18 +196,13 @@ onMounted(() => {
           </p>
 
           <div class="mt-6 grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              class="rounded-[18px] bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-600"
-              @click="closeLogoutModal"
-            >
+            <button type="button" class="rounded-[18px] bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-600"
+              @click="closeLogoutModal">
               취소
             </button>
-            <button
-              type="button"
+            <button type="button"
               class="rounded-[18px] bg-[linear-gradient(135deg,#38d39f_0%,#1fb6a6_100%)] px-4 py-3 text-sm font-semibold text-white"
-              @click="confirmLogout"
-            >
+              @click="confirmLogout">
               로그아웃
             </button>
           </div>
