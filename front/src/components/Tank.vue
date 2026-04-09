@@ -24,10 +24,6 @@ const momoSizeClass = computed(() => {
   return 'h-24 w-24';
 });
 
-const momoPositionClass = computed(() => {
-  return props.isHappy ? 'translate-y-[8%]' : 'translate-y-[14%]';
-});
-
 const waterToneClass = computed(() => {
   return props.isHappy
     ? 'from-[#F6FFFD] via-[#DFF7F1] to-[#BEE7E2]'
@@ -117,14 +113,15 @@ const waterToneClass = computed(() => {
         <div class="h-3 w-3 bg-[#e3ddd7]"></div>
       </div>
 
-      <div
-        class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center transition-transform duration-500"
-        :class="momoPositionClass"
-      >
-        <div
-          class="rounded-full bg-[radial-gradient(circle_at_30%_30%,#77f38e_0%,#49d86c_58%,#23b74d_100%)] shadow-[0_18px_40px_rgba(39,174,96,0.28)]"
-          :class="momoSizeClass"
-        ></div>
+      <div class="absolute inset-0 z-10">
+        <slot>
+          <div class="absolute inset-x-0 top-[24%] flex justify-center">
+            <div
+              class="rounded-full bg-[radial-gradient(circle_at_30%_30%,#77f38e_0%,#49d86c_58%,#23b74d_100%)] shadow-[0_18px_40px_rgba(39,174,96,0.28)]"
+              :class="momoSizeClass"
+            ></div>
+          </div>
+        </slot>
       </div>
     </div>
   </section>
