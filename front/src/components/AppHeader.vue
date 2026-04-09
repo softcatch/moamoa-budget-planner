@@ -20,7 +20,9 @@ defineProps({
 </script>
 
 <template>
-  <div class="flex items-start justify-between">
+  <div
+    class="fixed top-0 w-full max-w-[480px] bg-[#F4F7F6] px-6 pt-6 pb-4 z-[100] flex items-start justify-between"
+  >
     <div class="pr-4">
       <h1 class="text-[28px] leading-none font-bold text-slate-900">
         {{ title }}

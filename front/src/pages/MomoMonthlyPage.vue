@@ -6,6 +6,7 @@ import AppHeader from '@/components/AppHeader.vue';
 import TransactionCard from '@/components/TransactionCard.vue';
 import calendarIcon from '@/assets/calendar.png';
 import { useMomoStore } from '@/stores/momo';
+import NavBar from '@/components/NavBar.vue';
 import { useAuthStore } from '@/stores/auth';
 
 const momoStore = useMomoStore();
@@ -28,6 +29,17 @@ watch(
 
 const userTransactions = computed(() => momoStore.transactionList);
 
+const currentYearMonth = computed(() => {
+  const d = selectedDate.value;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+});
+
+const monthlyTransactions = computed(() => {
+  return userTransactions.value.filter((item) =>
+    item.date.startsWith(currentYearMonth.value),
+  );
+});
+
 const formattedDate = computed(() => {
   const d = selectedDate.value;
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -47,7 +59,7 @@ const selectedDateTransactions = computed(() => {
 const dailyTotalsMap = computed(() => {
   const map = {};
 
-  userTransactions.value.forEach((item) => {
+  monthlyTransactions.value.forEach((item) => {
     if (!map[item.date]) {
       map[item.date] = 0;
     }
@@ -63,13 +75,13 @@ const dailyTotalsMap = computed(() => {
 });
 
 const monthlyIncome = computed(() => {
-  return userTransactions.value
+  return monthlyTransactions.value
     .filter((item) => item.type === 'income')
     .reduce((sum, item) => sum + item.amount, 0);
 });
 
 const monthlyExpense = computed(() => {
-  return userTransactions.value
+  return monthlyTransactions.value
     .filter((item) => item.type === 'expense')
     .reduce((sum, item) => sum + item.amount, 0);
 });
@@ -86,31 +98,36 @@ const formatSignedWon = (amount) => {
 const onSelectDate = (date) => {
   selectedDate.value = date;
 };
+
+const monthLabel = computed(() => {
+  return `${selectedDate.value.getMonth() + 1}월 요약`;
+});
 </script>
 
 <template>
+  <AppHeader
+    title="월간"
+    subtitle="날짜를 누르면 하단에 해당 일자 내역이 보여요"
+    :iconSrc="calendarIcon"
+    iconAlt="calendar icon"
+  />
   <div
-    class="w-[390px] min-h-[844px] rounded-[32px] bg-[#F4F7F6] overflow-hidden relative p-6"
+    class="relative w-[480px] min-h-[844px] overflow-hidden rounded-[32px] bg-[#F4F7F6] px-6 pt-[110px] pb-[100px]"
   >
-    <AppHeader
-      title="월간"
-      subtitle="날짜를 누르면 하단에 해당 일자 내역이 보여요"
-      :iconSrc="calendarIcon"
-      iconAlt="calendar icon"
-    />
-
     <div class="mt-4 rounded-[24px] bg-white p-6 shadow-sm">
       <div class="flex items-center justify-between">
-        <span class="text-base font-bold text-slate-900">월별 요약</span>
+        <span class="text-base font-bold text-slate-900 ml-10">
+          {{ monthLabel }}
+        </span>
         <span
-          class="text-[24px] font-bold"
+          class="text-[24px] font-bold mr-10"
           :class="monthlyNet >= 0 ? 'text-emerald-500' : 'text-rose-500'"
         >
           {{ formatSignedWon(monthlyNet) }}
         </span>
       </div>
 
-      <div class="mt-5 grid grid-cols-2 gap-6">
+      <div class="mt-5 grid grid-cols-2 gap-6 ml-10">
         <div>
           <p class="text-[13px] font-bold text-slate-900">수입</p>
           <p class="mt-2 text-[20px] font-bold text-emerald-500">
@@ -134,17 +151,21 @@ const onSelectDate = (date) => {
         @select-date="onSelectDate"
       />
 
-      <div class="flex justify-between items-center">
-        <h2 class="text-base font-semibold text-slate-900 ml-4">
+      <div class="mt-35 flex items-center justify-between">
+        <h2 class="ml-4 text-base font-semibold text-slate-900">
           {{ formattedDateForPrint }}
         </h2>
 
-        <button
-          class="mr-2 flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-emerald-600 font-semibold text-xs"
+        <router-link
+          :to="{
+            name: 'momo/full-list',
+            hash: `#date-${formattedDate}`,
+          }"
+          class="mr-2 flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-xs font-semibold text-emerald-600 no-underline"
         >
           <span class="text-xs">≡</span>
           목록 보기
-        </button>
+        </router-link>
       </div>
 
       <div class="mt-4 space-y-3">
@@ -166,6 +187,8 @@ const onSelectDate = (date) => {
       </div>
     </div>
   </div>
+
+  <NavBar />
 </template>
 
 <style scoped></style>
