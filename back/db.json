@@ -238,9 +238,10 @@
       "isMomoHappy": false,
       "momoExp": 14,
       "momoLevel": 1,
-      "momoMission": "오늘은 굶으세요!",
-      "momoAttendance": 1,
-      "momoFinalAttendance": "2026-04-09"
+      "momoMission": "생필품 절약하기",
+      "momoAttendance": 3,
+      "momoFinalAttendance": "2026-04-08",
+      "momoMissionAssignedAt": "2026-04-08"
     },
     {
       "id": "m2",
@@ -250,7 +251,8 @@
       "momoLevel": 100,
       "momoMission": "오늘은 걸어다니세요!",
       "momoAttendance": 53,
-      "momoFinalAttendance": "2026-04-07"
+      "momoFinalAttendance": "2026-04-07",
+      "momoMissionAssignedAt": "2026-04-08"
     }
   ]
 }

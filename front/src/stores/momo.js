@@ -14,6 +14,7 @@ export const useMomoStore = defineStore('momo', () => {
   const momoExp = ref(0);
   const momoLevel = ref(1);
   const momoMission = ref('');
+  const momoMissionAssignedAt = ref('');
   const momoAttendance = ref(0);
   const momoFinalAttendance = ref('');
   const currentMomoUserId = ref(null);
@@ -28,6 +29,7 @@ export const useMomoStore = defineStore('momo', () => {
     momoExp.value = 0;
     momoLevel.value = 1;
     momoMission.value = '';
+    momoMissionAssignedAt.value = '';
     momoAttendance.value = 0;
     momoFinalAttendance.value = '';
     momoDataId.value = null;
@@ -74,6 +76,7 @@ export const useMomoStore = defineStore('momo', () => {
       momoExp.value = momoData.momoExp;
       momoLevel.value = momoData.momoLevel;
       momoMission.value = momoData.momoMission;
+      momoMissionAssignedAt.value = momoData.momoMissionAssignedAt ?? '';
       momoAttendance.value = momoData.momoAttendance;
       momoFinalAttendance.value = momoData.momoFinalAttendance;
     } catch (error) {
@@ -129,6 +132,7 @@ export const useMomoStore = defineStore('momo', () => {
           momoExp: payload.momoExp ?? 0,
           momoLevel: payload.momoLevel ?? 1,
           momoMission: payload.momoMission ?? '',
+          momoMissionAssignedAt: payload.momoMissionAssignedAt ?? '',
           momoAttendance: payload.momoAttendance ?? 0,
           momoFinalAttendance: payload.momoFinalAttendance ?? '',
         });
@@ -160,8 +164,16 @@ export const useMomoStore = defineStore('momo', () => {
     return await editMomoData(userId, { momoLevel: level });
   };
 
-  const updateMomoMission = async (userId, mission) => {
-    return await editMomoData(userId, { momoMission: mission });
+  const updateMomoMission = async (userId, mission, assignedAt) => {
+    const payload = {
+      momoMission: mission,
+    };
+
+    if (assignedAt !== undefined) {
+      payload.momoMissionAssignedAt = assignedAt;
+    }
+
+    return await editMomoData(userId, payload);
   };
 
   const updateMomoAttendance = async (userId, attendance, finalAttendance) => {
@@ -217,6 +229,7 @@ export const useMomoStore = defineStore('momo', () => {
     momoExp,
     momoLevel,
     momoMission,
+    momoMissionAssignedAt,
     momoAttendance,
     momoFinalAttendance,
     currentMomoUserId,

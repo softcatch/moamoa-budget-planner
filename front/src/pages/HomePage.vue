@@ -20,9 +20,12 @@ const ensureSession = () => {
   authStore.restoreSession();
 };
 
+const formatDate = (date) => {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
+
 const isLoggedIn = computed(() => authStore.isLogin);
 const effectiveUserId = computed(() => authStore.currentUserId);
-const missionText = computed(() => momoStore.momoMission?.trim() || '');
 const displayName = computed(() => authStore.currentName || '게스트');
 const displayLevel = computed(() =>
   isLoggedIn.value ? momoStore.momoLevel : 1,
@@ -31,13 +34,19 @@ const displayExp = computed(() => (isLoggedIn.value ? momoStore.momoExp : 0));
 const displayIsHappy = computed(() =>
   isLoggedIn.value ? momoStore.isMomoHappy : true,
 );
+const todayString = computed(() => formatDate(new Date()));
+const hasMissionForToday = computed(() => {
+  return (
+    momoStore.momoMissionAssignedAt === todayString.value &&
+    Boolean(momoStore.momoMission?.trim())
+  );
+});
+const missionText = computed(() => {
+  return hasMissionForToday.value ? momoStore.momoMission.trim() : '';
+});
 const hasCheckedInToday = computed(() => {
   return momoStore.momoFinalAttendance === formatDate(new Date());
 });
-
-const formatDate = (date) => {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-};
 
 const toDateOnly = (dateString) => {
   if (!dateString) {
@@ -102,6 +111,14 @@ const handleAttendance = async () => {
     nextAttendance,
     todayString,
   );
+};
+
+const openMissionModal = () => {
+  if (hasMissionForToday.value) {
+    return;
+  }
+
+  isMissionModalOpen.value = true;
 };
 
 const goToLogin = () => {
@@ -182,7 +199,8 @@ onMounted(() => {
 
           <Mission
             :missionText="missionText"
-            @open="isMissionModalOpen = true"
+            :disabled="hasMissionForToday"
+            @open="openMissionModal"
           />
         </div>
       </template>
@@ -200,6 +218,8 @@ onMounted(() => {
     <MissionDetail
       :modelValue="isMissionModalOpen"
       :missionText="missionText"
+      :missionAssignedAt="momoStore.momoMissionAssignedAt"
+      :userId="effectiveUserId"
       @close="isMissionModalOpen = false"
       @update:modelValue="isMissionModalOpen = $event"
     />
