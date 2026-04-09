@@ -1,8 +1,6 @@
 <template>
     <div class="max-w-[480px] mx-auto bg-[#F8F9FA] min-h-screen px-5 pt-5 pb-[80px] relative font-sans">
 
-        <AppHeader title="통계" subtitle="누구누구의 통계를 확인해보세요" icon-src="www" icon-alt="마리모입니다" />
-
         <section class="flex justify-between items-center mb-6 relative">
             <div class="mt-7 flex justify-center">
                 <div class="flex w-[140px] h-11 rounded-[18px] bg-slate-100 overflow-hidden shadow-inner">
@@ -21,10 +19,38 @@
 
             <div v-if="showCalendar"
                 class="absolute top-20 right-0 z-50 mt-2 w-[300px] rounded-[24px] border border-slate-200 bg-white p-2 shadow-lg">
-                <div class="flex justify-center">
-                    <VDatePicker v-model="selectedDate" type="month" @update:model-value="handleDateSelect" locale="ko"
-                        color="green" borderless transparent is-expanded />
-                </div>
+                <section class="rounded-[20px] p-3">
+                    <div class="mb-3 flex items-center justify-between">
+                        <button
+                            type="button"
+                            class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+                            @click="movePickerYear(-1)"
+                        >
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <strong class="text-base font-bold text-slate-900">{{ pickerYear }}년</strong>
+                        <button
+                            type="button"
+                            class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+                            @click="movePickerYear(1)"
+                        >
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <button
+                            v-for="month in monthOptions"
+                            :key="month.value"
+                            type="button"
+                            class="rounded-[16px] px-3 py-3 text-sm font-semibold transition"
+                            :class="getMonthButtonClass(month.value)"
+                            @click="selectMonth(month.value)"
+                        >
+                            {{ month.label }}
+                        </button>
+                    </div>
+                </section>
             </div>
 
             <div class="bg-white px-4 py-2.5 mt-7 rounded-full font-semibold flex items-center gap-2 cursor-pointer shadow-sm hover:bg-gray-50"
@@ -44,7 +70,7 @@
                 <h2 :class="['text-3xl font-extrabold', type === 'expense' ? 'text-[#E96B5F]' : 'text-emerald-500']">
                     ₩{{ totalAmount.toLocaleString() }}
                 </h2>
-                <span class="text-sm font-bold text-slate-800">지출 높은 순</span>
+                <!-- <span class="text-sm font-bold text-slate-800">금액 높은 순</span> -->
             </div>
         </section>
 
@@ -64,7 +90,7 @@
         <section>
             <div class="flex justify-between items-center mb-4 px-1">
                 <h3 class="text-lg font-bold text-slate-900">{{ type === 'expense' ? '지출' : '수입' }} 상세 내역</h3>
-                <span class="text-[13px] font-medium text-slate-400">금액 높은 순</span>
+                <!-- <span class="text-[13px] font-medium text-slate-400">금액 높은 순</span> -->
             </div>
 
             <div class="flex flex-col gap-3">
@@ -77,9 +103,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import AppHeader from '@/components/AppHeader.vue';
+import { computed, ref, watch } from 'vue';
 import TransactionCard from '@/components/TransactionCard.vue';
+import { useAuthStore } from '@/stores/auth';
+import { useMomoStore } from '@/stores/momo';
+import { categoryMap } from '@/constants/momoCategories';
 
 // Chart.js 관련 임포트
 import { Doughnut } from 'vue-chartjs';
@@ -91,58 +119,185 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 // ==========================================
 // 상태 및 뷰 로직
 // ==========================================
+const authStore = useAuthStore();
+const momoStore = useMomoStore();
+
 const type = ref('expense');
 const selectedDate = ref(new Date());
 const showCalendar = ref(false);
+const pickerYear = ref(selectedDate.value.getFullYear());
+
+const CATEGORY_COLORS = [
+    '#00C875',
+    '#FFB300',
+    '#FF3D71',
+    '#3366FF',
+    '#8F9BB3',
+    '#7C4DFF',
+    '#00B8D9',
+    '#FF6F61',
+    '#2E7D32',
+    '#C2185B',
+    '#5D4037',
+    '#3949AB',
+    '#00897B',
+    '#F4511E',
+    '#6D4C41',
+    '#546E7A',
+];
+const monthOptions = [
+    { value: 1, label: '1월' },
+    { value: 2, label: '2월' },
+    { value: 3, label: '3월' },
+    { value: 4, label: '4월' },
+    { value: 5, label: '5월' },
+    { value: 6, label: '6월' },
+    { value: 7, label: '7월' },
+    { value: 8, label: '8월' },
+    { value: 9, label: '9월' },
+    { value: 10, label: '10월' },
+    { value: 11, label: '11월' },
+    { value: 12, label: '12월' },
+];
 
 const changeType = (newType) => {
     type.value = newType;
-    // 추후 서버에서 데이터를 다시 불러오는 함수 호출
 };
 
 const openMonthPicker = () => {
     showCalendar.value = !showCalendar.value;
+
+    pickerYear.value = selectedDate.value.getFullYear();
 };
 
 const handleDateSelect = (newDate) => {
     selectedDate.value = newDate;
+    pickerYear.value = newDate.getFullYear();
     showCalendar.value = false;
-    // 추후 서버에서 월별 데이터를 다시 불러오는 함수 호출
+};
+
+const movePickerYear = (diff) => {
+    pickerYear.value += diff;
+};
+
+const selectMonth = (month) => {
+    handleDateSelect(new Date(pickerYear.value, month - 1, 1));
+};
+
+const getMonthButtonClass = (month) => {
+    const isSelected =
+        pickerYear.value === selectedDate.value.getFullYear() &&
+        month === selectedDate.value.getMonth() + 1;
+
+    if (isSelected) {
+        return 'bg-emerald-500 text-white shadow-sm';
+    }
+
+    return 'bg-slate-50 text-slate-600 hover:bg-slate-100';
 };
 
 const currentYear = computed(() => selectedDate.value.getFullYear());
 const currentMonth = computed(() => selectedDate.value.getMonth() + 1);
-
-// ==========================================
-// 데이터 통계 로직 (추후 스토어에서 받아올 데이터)
-// ==========================================
-const topCategories = ref([
-    { id: 1, name: '식비', percentage: 34, count: 12, amount: 140000, color: '#00C875' },
-    { id: 2, name: '카페', percentage: 21.8, count: 8, amount: 89800, color: '#FFB300' },
-    { id: 3, name: '쇼핑', percentage: 17, count: 3, amount: 70000, color: '#FF3D71' },
-    { id: 4, name: '교통', percentage: 11.9, count: 15, amount: 49000, color: '#3366FF' },
-    { id: 5, name: '구독', percentage: 10.3, count: 4, amount: 42500, color: '#8F9BB3' },
-]);
-
-// 배열 내 amount들의 총합을 계산합니다.
-const totalAmount = computed(() => {
-    return topCategories.value.reduce((sum, item) => sum + item.amount, 0);
+const currentYearMonth = computed(() => {
+    return `${currentYear.value}-${String(currentMonth.value).padStart(2, '0')}`;
 });
 
-// 금액 기준 내림차순 정렬된 카테고리
+watch(
+    () => authStore.currentUserId,
+    async (userId) => {
+        if (!userId) {
+            momoStore.transactionList = [];
+            return;
+        }
+
+        await momoStore.fetchTransactionList(userId);
+    },
+    { immediate: true },
+);
+
+// ==========================================
+// 데이터 통계 로직
+// ==========================================
+const currentCategoryMeta = computed(() => {
+    return categoryMap[type.value].reduce((metaMap, category, index) => {
+        const meta = {
+            label: category.label,
+            color: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+        };
+
+        metaMap[category.key] = meta;
+        metaMap[category.label] = meta;
+
+        return metaMap;
+    }, {});
+});
+
+const filteredTransactions = computed(() => {
+    return momoStore.transactionList.filter((transaction) => {
+        return (
+            transaction.type === type.value &&
+            transaction.date?.startsWith(currentYearMonth.value)
+        );
+    });
+});
+
+const totalAmount = computed(() => {
+    return filteredTransactions.value.reduce((sum, item) => {
+        return sum + (Number(item.amount) || 0);
+    }, 0);
+});
+
+const topCategories = computed(() => {
+    const categoryStats = filteredTransactions.value.reduce((statsMap, transaction) => {
+        const rawCategory = transaction.category || '기타';
+        const meta = currentCategoryMeta.value[rawCategory];
+        const categoryId = meta?.label || rawCategory;
+
+        if (!statsMap[categoryId]) {
+            statsMap[categoryId] = {
+                id: categoryId,
+                name: meta?.label || rawCategory,
+                count: 0,
+                amount: 0,
+                color: meta?.color || CATEGORY_COLORS[Object.keys(statsMap).length % CATEGORY_COLORS.length],
+            };
+        }
+
+        statsMap[categoryId].count += 1;
+        statsMap[categoryId].amount += Number(transaction.amount) || 0;
+
+        return statsMap;
+    }, {});
+
+    return Object.values(categoryStats)
+        .sort((a, b) => b.amount - a.amount)
+        .map((item) => ({
+            ...item,
+            percentage: totalAmount.value
+                ? Number(((item.amount / totalAmount.value) * 100).toFixed(1))
+                : 0,
+        }));
+});
+
 const sortedCategories = computed(() => {
-    return [...topCategories.value].sort((a, b) => b.amount - a.amount);
+    return topCategories.value;
 });
 
 // ==========================================
 // 차트.js 데이터 및 옵션 세팅
 // ==========================================
 const chartData = computed(() => ({
-    labels: topCategories.value.map(c => c.name),
+    labels: topCategories.value.length
+        ? topCategories.value.map(c => c.name)
+        : ['내역 없음'],
     datasets: [
         {
-            backgroundColor: topCategories.value.map(c => c.color),
-            data: topCategories.value.map(c => c.percentage),
+            backgroundColor: topCategories.value.length
+                ? topCategories.value.map(c => c.color)
+                : ['#E5E7EB'],
+            data: topCategories.value.length
+                ? topCategories.value.map(c => c.percentage)
+                : [100],
             borderWidth: 0,
             hoverOffset: 4, // 마우스 오버 시 살짝 튀어나오는 효과
             cutout: '65%',  // 가운데 구멍 크기 조절 (디자인 시안에 맞춤)
@@ -161,6 +316,9 @@ const chartOptions = {
             callbacks: {
                 // 툴팁에 퍼센트 기호 추가
                 label: function (context) {
+                    if (!topCategories.value.length) {
+                        return ' 내역 없음';
+                    }
                     return ` ${context.label}: ${context.raw}%`;
                 }
             }
@@ -169,6 +327,4 @@ const chartOptions = {
 };
 </script>
 
-<style scoped>
-/* 테일윈드로 거의 모든 스타일을 처리했으므로 빈 상태로 둡니다 */
-</style>
+<style scoped></style>
