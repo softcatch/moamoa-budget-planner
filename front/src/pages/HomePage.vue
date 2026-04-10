@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Tank from '@/components/Tank.vue';
 import Momo from '@/components/Momo.vue';
+import MomoGuideModal from '@/components/MomoGuideModal.vue';
 import ExpBar from '@/components/ExpBar.vue';
 import Attendance from '@/components/Attendance.vue';
 import Mission from '@/components/Mission.vue';
@@ -15,6 +16,8 @@ const authStore = useAuthStore();
 const momoStore = useMomoStore();
 
 const isMissionModalOpen = ref(false);
+const isLogoutModalOpen = ref(false);
+const isMomoGuideModalOpen = ref(false);
 
 const ensureSession = () => {
   authStore.restoreSession();
@@ -279,14 +282,22 @@ onMounted(() => {
           </Tank>
 
           <div v-if="isLoggedIn" class="lg:hidden">
-            <ExpBar :level="displayLevel" :exp="displayExp" />
+            <ExpBar
+              :level="displayLevel"
+              :exp="displayExp"
+              @open-guide="isMomoGuideModalOpen = true"
+            />
           </div>
         </section>
 
         <section class="space-y-5 lg:pt-1">
           <template v-if="isLoggedIn">
             <div class="hidden lg:block">
-              <ExpBar :level="displayLevel" :exp="displayExp" />
+              <ExpBar
+                :level="displayLevel"
+                :exp="displayExp"
+                @open-guide="isMomoGuideModalOpen = true"
+              />
             </div>
 
             <div class="grid grid-cols-2 gap-3 lg:grid-cols-1">
@@ -326,5 +337,43 @@ onMounted(() => {
       @close="isMissionModalOpen = false"
       @update:modelValue="isMissionModalOpen = $event"
     />
+
+    <MomoGuideModal
+      :modelValue="isMomoGuideModalOpen"
+      @close="isMomoGuideModalOpen = false"
+      @update:modelValue="isMomoGuideModalOpen = $event"
+    />
+
+    <teleport to="body">
+      <div
+        v-if="isLogoutModalOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4"
+        @click.self="closeLogoutModal"
+      >
+        <section class="w-full max-w-[340px] rounded-[28px] bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.24)]">
+          <h2 class="text-xl font-bold text-slate-900">로그아웃 하시겠습니까?</h2>
+          <p class="mt-2 text-sm text-slate-500">
+            현재 세션이 종료되고 로그인 화면으로 이동합니다.
+          </p>
+
+          <div class="mt-6 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              class="rounded-[18px] bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-600"
+              @click="closeLogoutModal"
+            >
+              취소
+            </button>
+            <button
+              type="button"
+              class="rounded-[18px] bg-[linear-gradient(135deg,#38d39f_0%,#1fb6a6_100%)] px-4 py-3 text-sm font-semibold text-white"
+              @click="confirmLogout"
+            >
+              로그아웃
+            </button>
+          </div>
+        </section>
+      </div>
+    </teleport>
   </main>
 </template>
