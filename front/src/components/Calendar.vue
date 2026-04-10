@@ -12,7 +12,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['select-date']);
+const emit = defineEmits(['select-date', 'move-month']);
 
 const masks = {
   title: 'YYYY년 M월',
@@ -20,6 +20,17 @@ const masks = {
 
 const onDayClick = (day) => {
   emit('select-date', day.date);
+};
+
+const onCalendarMove = (pages) => {
+  const page = pages?.[0];
+
+  if (!page?.year || !page?.month) return;
+
+  emit('move-month', {
+    year: page.year,
+    month: page.month,
+  });
 };
 
 const calendarAttributes = computed(() => {
@@ -80,6 +91,7 @@ const getDayTotalClass = (day) => {
       borderless
       transparent
       title-position="left"
+      @did-move="onCalendarMove"
     >
       <template #day-content="{ day }">
         <div class="day-cell" @click="onDayClick(day)">
