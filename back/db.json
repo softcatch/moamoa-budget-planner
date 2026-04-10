@@ -11,6 +11,12 @@
       "username": "34",
       "password": "34",
       "name": "테스트 유저2"
+    },
+    {
+      "id": "u1775800968655",
+      "username": "ddong",
+      "password": "123",
+      "name": "똥"
     }
   ],
   "transactions": [
@@ -255,6 +261,18 @@
       "momoFinalAttendance": "2026-04-07",
       "momoMissionAssignedAt": "2026-04-08",
       "momoMissionSettled": false
+    },
+    {
+      "id": "m1775800968697",
+      "userId": "u1775800968655",
+      "isMomoHappy": true,
+      "momoExp": 990,
+      "momoLevel": 1,
+      "momoMission": "교통",
+      "momoMissionAssignedAt": "2026-04-10",
+      "momoMissionSettled": false,
+      "momoAttendance": 1,
+      "momoFinalAttendance": "2026-04-10"
     }
   ]
 }

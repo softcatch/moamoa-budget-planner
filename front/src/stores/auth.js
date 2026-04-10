@@ -14,16 +14,16 @@ export const useAuthStore = defineStore('auth', () => {
   const errorMessage = ref('');
 
   // 로그인 상태
-  // currentUserId: 현재 로그인한 유저 id
-  // currentUsername: 현재 로그인한 유저 아이디(username)
-  // currentName: 현재 로그인한 유저 이름(name)
+  // currentUserId: 현재 로그인된 유저 id
+  // currentUsername: 현재 로그인된 유저 아이디(username)
+  // currentName: 현재 로그인된 유저 실명(name)
   // isLogin: 로그인 여부
   const currentUserId = ref(null);
   const currentUsername = ref('');
   const currentName = ref('');
   const isLogin = ref(false);
 
-  // 현재 로그인한 유저 정보를 하나의 객체로 제공
+  // 현재 로그인된 유저 정보를 하나의 객체로 제공
   // null이면 로그인 상태가 아님
   const currentUser = computed(() => {
     if (!currentUserId.value || !currentUsername.value) {
@@ -78,7 +78,7 @@ export const useAuthStore = defineStore('auth', () => {
     );
   };
 
-  // 로그인 성공 후 상태 설정 + sessionStorage 반영
+  // 로그인 성공 시 상태 설정 + sessionStorage 반영
   const setAuthState = (user) => {
     currentUserId.value = user.id;
     currentUsername.value = user.username;
@@ -94,7 +94,7 @@ export const useAuthStore = defineStore('auth', () => {
     sessionStorage.removeItem(STORAGE_KEY);
   };
 
-  // 브라우저 재로고침 후 sessionStorage를 기반으로 로그인 상태 복원
+  // 브라우저 새로고침 시 sessionStorage를 기반으로 로그인 상태 복원
   const restoreSession = () => {
     clearError();
 
@@ -139,9 +139,7 @@ export const useAuthStore = defineStore('auth', () => {
       const trimmedName = name.trim();
 
       if (!trimmedUsername || !trimmedPassword || !trimmedName) {
-        throw new Error(
-          '?꾩씠?? 鍮꾨?踰덊샇, ?ъ슜???대쫫??紐⑤몢 ?낅젰?댁＜?몄슂.',
-        );
+        throw new Error('아이디, 비밀번호, 사용자 이름을 모두 입력해주세요.');
       }
 
       // 동일 username 존재 여부 확인
@@ -150,7 +148,7 @@ export const useAuthStore = defineStore('auth', () => {
       });
 
       if (duplicateUserResponse.data.length > 0) {
-        throw new Error('?대? ?ъ슜 以묒씤 ?꾩씠?붿엯?덈떎.');
+        throw new Error('이미 사용 중인 아이디입니다.');
       }
 
       // 신규 사용자 생성
@@ -181,8 +179,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (error) {
       console.error('signup error:', error);
       isError.value = true;
-      errorMessage.value =
-        error.message || '?뚯썝媛??以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.';
+      errorMessage.value = error.message || '회원가입 중 오류가 발생했습니다.';
       throw error;
     } finally {
       isFetching.value = false;
@@ -202,7 +199,7 @@ export const useAuthStore = defineStore('auth', () => {
       const trimmedPassword = password.trim();
 
       if (!trimmedUsername || !trimmedPassword) {
-        throw new Error('?꾩씠?붿? 鍮꾨?踰덊샇瑜?紐⑤몢 ?낅젰?댁＜?몄슂.');
+        throw new Error('아이디와 비밀번호를 모두 입력해주세요.');
       }
 
       // username으로 사용자 조회
@@ -215,11 +212,11 @@ export const useAuthStore = defineStore('auth', () => {
 
       // 비밀번호 검증
       if (!targetUser) {
-        throw new Error('議댁옱?섏? ?딅뒗 ?꾩씠?붿엯?덈떎.');
+        throw new Error('존재하지 않는 아이디입니다.');
       }
 
       if (targetUser.password !== trimmedPassword) {
-        throw new Error('鍮꾨?踰덊샇媛 ?쇱튂?섏? ?딆뒿?덈떎.');
+        throw new Error('비밀번호가 일치하지 않습니다.');
       }
 
       setAuthState(targetUser);
@@ -227,8 +224,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (error) {
       console.error('login error:', error);
       isError.value = true;
-      errorMessage.value =
-        error.message || '濡쒓렇??以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.';
+      errorMessage.value = error.message || '로그인 중 오류가 발생했습니다.';
       throw error;
     } finally {
       isFetching.value = false;
@@ -243,19 +239,16 @@ export const useAuthStore = defineStore('auth', () => {
       const trimmedName = name.trim();
 
       if (!currentUserId.value) {
-        throw new Error('濡쒓렇???뺣낫媛 ?놁뒿?덈떎.');
+        throw new Error('로그인 정보가 없습니다.');
       }
 
       if (!trimmedName) {
-        throw new Error('?대쫫???낅젰?댁＜?몄슂.');
+        throw new Error('이름을 입력해주세요.');
       }
 
-      const response = await axios.patch(
-        `${BASE_URL}/users/${currentUserId.value}`,
-        {
-          name: trimmedName,
-        },
-      );
+      const response = await axios.patch(`${BASE_URL}/users/${currentUserId.value}`, {
+        name: trimmedName,
+      });
 
       currentName.value = response.data.name || trimmedName;
       persistAuth();
@@ -264,8 +257,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (error) {
       console.error('updateName error:', error);
       isError.value = true;
-      errorMessage.value =
-        error.message || '?대쫫 蹂寃?以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.';
+      errorMessage.value = error.message || '이름 변경 중 오류가 발생했습니다.';
       throw error;
     } finally {
       isFetching.value = false;
@@ -286,7 +278,7 @@ export const useAuthStore = defineStore('auth', () => {
       const trimmedNextPasswordConfirm = nextPasswordConfirm.trim();
 
       if (!currentUserId.value) {
-        throw new Error('濡쒓렇???뺣낫媛 ?놁뒿?덈떎.');
+        throw new Error('로그인 정보가 없습니다.');
       }
 
       if (
@@ -294,38 +286,29 @@ export const useAuthStore = defineStore('auth', () => {
         !trimmedNextPassword ||
         !trimmedNextPasswordConfirm
       ) {
-        throw new Error(
-          '?꾩옱 鍮꾨?踰덊샇? 諛붽? 鍮꾨?踰덊샇瑜?紐⑤몢 ?낅젰?댁＜?몄슂.',
-        );
+        throw new Error('현재 비밀번호와 바꿀 비밀번호를 모두 입력해주세요.');
       }
 
       if (trimmedNextPassword !== trimmedNextPasswordConfirm) {
-        throw new Error(
-          '諛붽? 鍮꾨?踰덊샇? 鍮꾨?踰덊샇 ?뺤씤???쇱튂?섏? ?딆뒿?덈떎.',
-        );
+        throw new Error('바꿀 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
       }
 
-      const userResponse = await axios.get(
-        `${BASE_URL}/users/${currentUserId.value}`,
-      );
+      const userResponse = await axios.get(`${BASE_URL}/users/${currentUserId.value}`);
 
       if (userResponse.data.password !== trimmedCurrentPassword) {
-        throw new Error('?꾩옱 鍮꾨?踰덊샇媛 ?쇱튂?섏? ?딆뒿?덈떎.');
+        throw new Error('현재 비밀번호가 일치하지 않습니다.');
       }
 
-      const response = await axios.patch(
-        `${BASE_URL}/users/${currentUserId.value}`,
-        {
-          password: trimmedNextPassword,
-        },
-      );
+      const response = await axios.patch(`${BASE_URL}/users/${currentUserId.value}`, {
+        password: trimmedNextPassword,
+      });
 
       return response.data;
     } catch (error) {
       console.error('updatePassword error:', error);
       isError.value = true;
       errorMessage.value =
-        error.message || '鍮꾨?踰덊샇 蹂寃?以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.';
+        error.message || '비밀번호 변경 중 오류가 발생했습니다.';
       throw error;
     } finally {
       isFetching.value = false;
