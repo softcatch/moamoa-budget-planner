@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Tank from '@/components/Tank.vue';
 import Momo from '@/components/Momo.vue';
+import MomoGuideModal from '@/components/MomoGuideModal.vue';
 import ExpBar from '@/components/ExpBar.vue';
 import Attendance from '@/components/Attendance.vue';
 import Mission from '@/components/Mission.vue';
@@ -16,6 +17,7 @@ const momoStore = useMomoStore();
 
 const isMissionModalOpen = ref(false);
 const isLogoutModalOpen = ref(false);
+const isMomoGuideModalOpen = ref(false);
 
 const ensureSession = () => {
   authStore.restoreSession();
@@ -291,14 +293,22 @@ onMounted(() => {
           </Tank>
 
           <div v-if="isLoggedIn" class="lg:hidden">
-            <ExpBar :level="displayLevel" :exp="displayExp" />
+            <ExpBar
+              :level="displayLevel"
+              :exp="displayExp"
+              @open-guide="isMomoGuideModalOpen = true"
+            />
           </div>
         </section>
 
         <section class="space-y-5 lg:pt-1">
           <template v-if="isLoggedIn">
             <div class="hidden lg:block">
-              <ExpBar :level="displayLevel" :exp="displayExp" />
+              <ExpBar
+                :level="displayLevel"
+                :exp="displayExp"
+                @open-guide="isMomoGuideModalOpen = true"
+              />
             </div>
 
             <div class="grid grid-cols-2 gap-3 lg:grid-cols-1">
@@ -337,6 +347,12 @@ onMounted(() => {
       :userId="effectiveUserId"
       @close="isMissionModalOpen = false"
       @update:modelValue="isMissionModalOpen = $event"
+    />
+
+    <MomoGuideModal
+      :modelValue="isMomoGuideModalOpen"
+      @close="isMomoGuideModalOpen = false"
+      @update:modelValue="isMomoGuideModalOpen = $event"
     />
 
     <teleport to="body">
