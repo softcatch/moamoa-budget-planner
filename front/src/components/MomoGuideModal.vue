@@ -25,7 +25,7 @@ const closeModal = () => {
   <teleport to="body">
     <div
       v-if="props.modelValue"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4 py-8"
+      class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/35 px-4 py-8"
       @click.self="closeModal"
     >
       <section
