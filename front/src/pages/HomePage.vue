@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Tank from '@/components/Tank.vue';
+import Momo from '@/components/Momo.vue';
 import ExpBar from '@/components/ExpBar.vue';
 import Attendance from '@/components/Attendance.vue';
 import Mission from '@/components/Mission.vue';
@@ -31,9 +32,13 @@ const displayLevel = computed(() =>
   isLoggedIn.value ? momoStore.momoLevel : 1,
 );
 const displayExp = computed(() => (isLoggedIn.value ? momoStore.momoExp : 0));
-const displayIsHappy = computed(() =>
-  isLoggedIn.value ? momoStore.isMomoHappy : true,
-);
+const displayIsHappy = computed(() => {
+  if (!isLoggedIn.value) {
+    return true;
+  }
+
+  return hasCheckedInToday.value;
+});
 const hasActiveMission = computed(() => {
   return Boolean(
     momoStore.momoMission?.trim() && momoStore.momoMissionAssignedAt,
@@ -68,6 +73,45 @@ const missionText = computed(() => {
 });
 const hasCheckedInToday = computed(() => {
   return momoStore.momoFinalAttendance === formatDate(new Date());
+});
+const currentMonthKey = computed(() => {
+  const today = new Date();
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+});
+const monthlyBalanceState = computed(() => {
+  if (!isLoggedIn.value) {
+    return 'steady';
+  }
+
+  const totals = momoStore.transactionList.reduce(
+    (acc, transaction) => {
+      if (!transaction?.date?.startsWith(currentMonthKey.value)) {
+        return acc;
+      }
+
+      const normalizedType = String(transaction.type || '').toLowerCase();
+      const amount = Number(transaction.amount) || 0;
+
+      if (normalizedType === 'income') {
+        acc.income += amount;
+      } else if (normalizedType === 'expense') {
+        acc.expense += amount;
+      }
+
+      return acc;
+    },
+    { income: 0, expense: 0 },
+  );
+
+  if (totals.income > totals.expense) {
+    return 'float';
+  }
+
+  if (totals.expense > totals.income) {
+    return 'sink';
+  }
+
+  return 'steady';
 });
 
 const toDateOnly = (dateString) => {
@@ -133,6 +177,7 @@ const fetchHomeData = async (userId) => {
   }
 
   await momoStore.fetchMomoData(userId);
+  await momoStore.fetchTransactionList(userId);
 };
 
 const handleAttendance = async () => {
@@ -235,7 +280,13 @@ onMounted(() => {
         </button>
       </header>
 
-      <Tank :level="displayLevel" :isHappy="displayIsHappy" />
+      <Tank :level="displayLevel" :isHappy="displayIsHappy">
+        <Momo
+          :level="displayLevel"
+          :isHappy="displayIsHappy"
+          :monthly-state="monthlyBalanceState"
+        />
+      </Tank>
 
       <template v-if="isLoggedIn">
         <div class="mt-5">
