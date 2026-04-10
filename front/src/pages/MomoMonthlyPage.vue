@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import Calendar from '@/components/Calendar.vue';
 import AppHeader from '@/components/AppHeader.vue';
@@ -9,8 +10,28 @@ import { useAuthStore } from '@/stores/auth';
 
 const momoStore = useMomoStore();
 const authStore = useAuthStore();
+const route = useRoute();
+const router = useRouter();
 
-const selectedDate = ref(new Date(2026, 3, 8));
+const getTodayDate = () => {
+  const today = new Date();
+  return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+};
+
+const parseQueryDate = (dateValue) => {
+  if (typeof dateValue !== 'string') return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return null;
+
+  const parsedDate = new Date(`${dateValue}T00:00:00`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  return parsedDate;
+};
+
+const selectedDate = ref(parseQueryDate(route.query.date) ?? getTodayDate());
 
 watch(
   () => authStore.currentUserId,
@@ -94,16 +115,50 @@ const formatSignedWon = (amount) => {
 };
 
 const onSelectDate = (date) => {
-  selectedDate.value = date;
+  selectedDate.value = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
 };
 
 const monthLabel = computed(() => {
   return `${selectedDate.value.getMonth() + 1}월 요약`;
 });
+
+watch(
+  formattedDate,
+  async (date) => {
+    if (route.query.date === date) return;
+
+    await router.replace({
+      name: route.name,
+      query: {
+        ...route.query,
+        date,
+      },
+    });
+  },
+  { immediate: true },
+);
+
+watch(
+  () => route.query.date,
+  (date) => {
+    const parsedDate = parseQueryDate(date);
+
+    if (!parsedDate) return;
+    if (formattedDate.value === date) return;
+
+    selectedDate.value = parsedDate;
+  },
+);
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#eaf3ef] px-4 py-5 pb-[112px] text-slate-900 md:px-8 lg:pb-10 lg:pr-[120px]">
+  <main
+    class="min-h-screen bg-[#eaf3ef] px-4 py-5 pb-[112px] text-slate-900 md:px-8 lg:pb-10 lg:pr-[120px]"
+  >
     <div
       class="mx-auto min-h-[calc(100vh-2.5rem)] w-full max-w-[480px] rounded-[32px] bg-[#F4F7F6] px-5 pt-5 pb-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:max-w-[1040px] lg:px-8 lg:pt-7 lg:pb-8"
     >
@@ -113,7 +168,9 @@ const monthLabel = computed(() => {
         iconClass="fa-solid fa-calendar-days"
       />
 
-      <div class="grid gap-4 lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)] lg:items-start lg:gap-6">
+      <div
+        class="grid gap-4 lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)] lg:items-start lg:gap-6"
+      >
         <div class="space-y-4">
           <section class="rounded-[24px] bg-white p-6 shadow-sm">
             <div class="flex flex-wrap items-start justify-between gap-3">
@@ -154,7 +211,9 @@ const monthLabel = computed(() => {
           </section>
         </div>
 
-        <section class="rounded-[24px] bg-white p-5 shadow-sm lg:sticky lg:top-[128px] lg:max-h-[calc(100vh-160px)] lg:overflow-y-auto">
+        <section
+          class="rounded-[24px] bg-white p-5 shadow-sm lg:sticky lg:top-[128px] lg:max-h-[calc(100vh-160px)] lg:overflow-y-auto"
+        >
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-base font-semibold text-slate-900">
               {{ formattedDateForPrint }}

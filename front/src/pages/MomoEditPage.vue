@@ -13,11 +13,34 @@ const router = useRouter();
 const authStore = useAuthStore();
 const momoStore = useMomoStore();
 
-const type = ref('expense'); // expense | income
+const type = ref('expense');
 const selectedCategory = ref(null);
 
 const showCalendar = ref(false);
-const selectedDate = ref(new Date());
+
+const getTodayDate = () => {
+  const today = new Date();
+  return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+};
+
+const parseQueryDate = (dateValue) => {
+  if (typeof dateValue !== 'string') return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return null;
+
+  const parsedDate = new Date(`${dateValue}T00:00:00`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  return parsedDate;
+};
+
+const getInitialSelectedDate = () => {
+  return parseQueryDate(route.query.date) ?? getTodayDate();
+};
+
+const selectedDate = ref(getInitialSelectedDate());
 const amountInput = ref(null);
 
 const amount = ref('');
@@ -50,9 +73,6 @@ const formattedDate = computed(() => {
   return `${yyyy}.${mm}.${dd} ${days[date.getDay()]}`;
 });
 
-/* =========================
- * 유틸 함수
- * ========================= */
 const sanitizeAmount = (value) => {
   return String(value)
     .replace(/[^0-9]/g, '')
@@ -85,7 +105,9 @@ const getCategoryKey = (categoryValue, categoryType = type.value) => {
 };
 
 const getCategoryLabel = (categoryValue, categoryType = type.value) => {
-  return findCategoryByValue(categoryValue, categoryType)?.label ?? categoryValue;
+  return (
+    findCategoryByValue(categoryValue, categoryType)?.label ?? categoryValue
+  );
 };
 
 const currentCategories = computed(() => {
@@ -141,7 +163,11 @@ const toggleCalendar = () => {
 };
 
 const handleDateSelect = (date) => {
-  selectedDate.value = date;
+  selectedDate.value = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
   showCalendar.value = false;
   inlineErrorMessage.value = '';
 };
@@ -215,7 +241,7 @@ const getCategoryLabelClass = (category) => {
 const resetForm = () => {
   type.value = 'expense';
   selectedCategory.value = null;
-  selectedDate.value = new Date();
+  selectedDate.value = getInitialSelectedDate();
   amount.value = '';
   memo.value = '';
   inlineErrorMessage.value = '';
@@ -225,7 +251,10 @@ const resetForm = () => {
 
 const applyTransactionToForm = (transaction) => {
   type.value = transaction.type;
-  selectedCategory.value = getCategoryKey(transaction.category, transaction.type);
+  selectedCategory.value = getCategoryKey(
+    transaction.category,
+    transaction.type,
+  );
   amount.value = String(transaction.amount ?? '');
   memo.value = transaction.desc ?? '';
 
@@ -268,12 +297,8 @@ const goBack = () => {
 };
 
 const validateForm = () => {
-  formError.amount = parseAmount(amount.value)
-    ? ''
-    : '금액을 입력해주세요.';
-  formError.category = selectedCategory.value
-    ? ''
-    : '카테고리를 선택해주세요.';
+  formError.amount = parseAmount(amount.value) ? '' : '금액을 입력해주세요.';
+  formError.category = selectedCategory.value ? '' : '카테고리를 선택해주세요.';
 
   return !formError.amount && !formError.category;
 };
@@ -331,6 +356,7 @@ watch(
     route.query.mode,
     route.query.transactionId,
     route.query.id,
+    route.query.date,
     authStore.currentUserId,
   ],
   async () => {
@@ -341,146 +367,149 @@ watch(
 
 <template>
   <main class="min-h-screen bg-[#eaf3ef] px-4 py-5 text-slate-900 md:px-8">
-    <div class="mx-auto w-full max-w-[480px] rounded-[32px] bg-[#F4F7F6] px-5 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] md:max-w-[720px] md:px-8 md:py-7">
-    <section class="flex items-center justify-between">
-      <button
-        type="button"
-        class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[22px] text-slate-900 shadow-sm"
-        @click="goBack"
-      >
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-
-      <button
-        type="button"
-        :disabled="isSubmitting"
-        class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[22px] text-slate-900 shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
-        @click="submitForm"
-      >
-        <i class="fa-solid fa-check"></i>
-      </button>
-    </section>
-    <!-- 지출 / 수입 토글 -->
-    <div class="mt-7 flex justify-center">
-      <div class="flex w-[140px] h-11 rounded-[18px] bg-white overflow-hidden">
+    <div
+      class="mx-auto min-h-[calc(100vh-2.5rem)] w-full max-w-[480px] rounded-[32px] bg-[#F4F7F6] px-5 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:max-w-[1040px] lg:px-8 lg:py-8"
+    >
+      <section class="flex items-center justify-between">
         <button
           type="button"
-          class="w-1/2 text-sm font-bold"
-          :class="
-            type === 'expense'
-              ? 'bg-[#E96B5F] text-white'
-              : 'bg-white text-zinc-300'
-          "
-          @click="changeType('expense')"
+          class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[22px] text-slate-900 shadow-sm"
+          @click="goBack"
         >
-          지출
+          <i class="fa-solid fa-chevron-left"></i>
         </button>
+
         <button
           type="button"
-          class="w-1/2 text-sm font-bold"
-          :class="
-            type === 'income'
-              ? 'bg-emerald-500 text-white'
-              : 'bg-white text-zinc-300'
-          "
-          @click="changeType('income')"
+          :disabled="isSubmitting"
+          class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[22px] text-slate-900 shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
+          @click="submitForm"
         >
-          수입
+          <i class="fa-solid fa-check"></i>
         </button>
-      </div>
-    </div>
+      </section>
 
-    <!-- 날짜 선택 -->
-    <section class="relative mt-5">
-      <div class="flex justify-center">
-        <button
-          type="button"
-          class="flex items-center justify-center gap-2 text-[18px] font-medium text-zinc-400"
-          @click="toggleCalendar"
-        >
-          <i class="fa-regular fa-calendar-days"></i>
-          <span>{{ formattedDate }}</span>
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-      </div>
-
-      <!-- 달력 -->
-      <div
-        v-if="showCalendar"
-        class="absolute top-full left-1/2 z-50 mt-4 w-[340px] max-w-[calc(100vw-48px)] -translate-x-1/2 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm"
-      >
-        <div class="flex justify-center">
-          <VDatePicker
-            v-model="selectedDate"
-            @update:model-value="handleDateSelect"
-            locale="ko"
-            color="green"
-            borderless
-            transparent
-            is-expanded
-          />
-        </div>
-      </div>
-    </section>
-
-    <!-- 금액 표시 -->
-    <section class="mt-7 px-4 sm:px-0">
-      <div class="mx-auto flex w-full max-w-[420px] flex-col items-center">
-        <div class="inline-flex items-center justify-center">
-          <input
-            ref="amountInput"
-            :value="displayAmount"
-            type="text"
-            inputmode="numeric"
-            :style="{ width: amountInputWidth }"
-            class="min-w-[1ch] border-none bg-transparent p-0 text-center text-[40px] leading-[1] font-normal text-slate-900 outline-none"
-            @input="handleAmountInput"
-            @beforeinput="handleAmountBeforeInput"
-            @focus="selectAmountOnEmpty"
-            @click="selectAmountOnEmpty"
-          />
-          <span
-            class="-ml-[0.04em] inline-flex items-center text-[40px] leading-[1] font-normal text-slate-900"
-          >
-            원
-          </span>
-        </div>
-
-        <!-- 빠른 금액 추가 버튼 -->
+      <div class="mt-7 flex justify-center">
         <div
-          class="mt-5 flex w-full flex-wrap items-center justify-center gap-3"
+          class="flex h-11 w-[140px] overflow-hidden rounded-[18px] bg-white"
         >
           <button
             type="button"
-            class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
-            @click="addQuickAmount(10000)"
+            class="w-1/2 text-sm font-bold"
+            :class="
+              type === 'expense'
+                ? 'bg-[#E96B5F] text-white'
+                : 'bg-white text-zinc-300'
+            "
+            @click="changeType('expense')"
           >
-            +1만원
+            지출
           </button>
           <button
             type="button"
-            class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
-            @click="addQuickAmount(50000)"
+            class="w-1/2 text-sm font-bold"
+            :class="
+              type === 'income'
+                ? 'bg-emerald-500 text-white'
+                : 'bg-white text-zinc-300'
+            "
+            @click="changeType('income')"
           >
-            +5만원
+            수입
           </button>
+        </div>
+      </div>
+
+      <section class="relative mt-5">
+        <div class="flex justify-center">
           <button
             type="button"
-            class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
-            @click="addQuickAmount(100000)"
+            class="flex items-center justify-center gap-2 text-[18px] font-medium text-zinc-400"
+            @click="toggleCalendar"
           >
-            +10만원
+            <i class="fa-regular fa-calendar-days"></i>
+            <span>{{ formattedDate }}</span>
+            <i class="fa-solid fa-chevron-right"></i>
           </button>
         </div>
 
-        <p
-          v-if="formError.amount"
-          class="mt-4 w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
+        <div
+          v-if="showCalendar"
+          class="absolute top-full left-1/2 z-50 mt-4 w-[340px] max-w-[calc(100vw-48px)] -translate-x-1/2 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm"
         >
-          {{ formError.amount }}
-        </p>
+          <div class="flex justify-center">
+            <VDatePicker
+              v-model="selectedDate"
+              @update:model-value="handleDateSelect"
+              locale="ko"
+              color="green"
+              borderless
+              transparent
+              is-expanded
+            />
+          </div>
+        </div>
+      </section>
 
-        <section class="mt-11 w-full">
+      <section class="mt-7 grid gap-4 px-4 sm:px-0 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start lg:gap-x-10 lg:gap-y-4">
+        <div class="mx-auto mb-4 flex w-full max-w-[420px] flex-col items-center lg:col-start-1 lg:row-start-1 lg:mb-0">
+          <section class="w-full rounded-[24px] bg-white/70 px-4 py-8 shadow-sm">
+            <div class="inline-flex w-full items-center justify-center">
+              <input
+                ref="amountInput"
+                :value="displayAmount"
+                type="text"
+                inputmode="numeric"
+                :style="{ width: amountInputWidth }"
+                class="min-w-[1ch] border-none bg-transparent p-0 text-center text-[40px] font-normal leading-[1] text-slate-900 outline-none"
+                @input="handleAmountInput"
+                @beforeinput="handleAmountBeforeInput"
+                @focus="selectAmountOnEmpty"
+                @click="selectAmountOnEmpty"
+              />
+              <span
+                class="-ml-[0.04em] inline-flex items-center text-[40px] font-normal leading-[1] text-slate-900"
+              >
+                원
+              </span>
+            </div>
+
+            <div
+              class="mt-5 flex w-full flex-wrap items-center justify-center gap-3"
+            >
+              <button
+                type="button"
+                class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
+                @click="addQuickAmount(10000)"
+              >
+                +1만원
+              </button>
+              <button
+                type="button"
+                class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
+                @click="addQuickAmount(50000)"
+              >
+                +5만원
+              </button>
+              <button
+                type="button"
+                class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
+                @click="addQuickAmount(100000)"
+              >
+                +10만원
+              </button>
+            </div>
+
+            <p
+              v-if="formError.amount"
+              class="mt-4 w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
+            >
+              {{ formError.amount }}
+            </p>
+          </section>
+        </div>
+
+        <section class="w-full rounded-[24px] bg-white p-5 shadow-sm lg:col-start-2 lg:row-span-4 lg:row-start-1">
           <h2 class="text-[28px] font-extrabold text-slate-900">카테고리</h2>
 
           <div class="mt-6 grid grid-cols-4 gap-x-3 gap-y-5">
@@ -519,8 +548,7 @@ watch(
           </p>
         </section>
 
-        <!-- 메모 -->
-        <section class="mt-12 w-full">
+        <section class="w-full rounded-[24px] bg-white p-5 shadow-sm lg:col-start-1 lg:row-start-2">
           <h2 class="text-[28px] font-extrabold text-slate-900">메모</h2>
 
           <div class="mt-5">
@@ -536,22 +564,21 @@ watch(
 
         <p
           v-if="inlineErrorMessage"
-          class="mt-4 w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
+          class="w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500 lg:col-start-1"
         >
           {{ inlineErrorMessage }}
         </p>
 
-        <section v-if="isEditMode" class="mt-8 w-full">
+        <section v-if="isEditMode" class="w-full lg:col-start-1">
           <button
             type="button"
             class="flex h-16 w-full items-center justify-center gap-3 rounded-[22px] bg-rose-50 text-[18px] font-bold text-rose-400 transition hover:bg-rose-100"
-          >
+            >
             <i class="fa-regular fa-trash-can text-[18px]"></i>
             <span>삭제하기</span>
           </button>
         </section>
-      </div>
-    </section>
+      </section>
     </div>
   </main>
 </template>

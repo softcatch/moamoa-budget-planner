@@ -39,6 +39,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/momo/mypage',
+      name: 'momo/mypage',
+      component: () => import('@/pages/MomoMyPage.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'notfound',
       component: () => import('@/pages/NotFoundPage.vue'),
@@ -49,6 +55,8 @@ const router = createRouter({
 // 인증 가드
 router.beforeEach((to) => {
   const authStore = useAuthStore();
+
+  authStore.restoreSession();
 
   // 인증이 필요한 페이지
   if (to.matched.some((record) => record.meta.requiresAuth)) {

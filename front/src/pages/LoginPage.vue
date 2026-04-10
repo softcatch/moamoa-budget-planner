@@ -92,7 +92,7 @@ const switchMode = (nextMode) => {
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#1F1F1F] px-4 py-6 sm:px-6 lg:px-8">
+  <main class="min-h-screen bg-[#eaf3ef] px-4 py-6 sm:px-6 lg:px-8">
     <div
       class="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-[1180px] items-center justify-center"
     >

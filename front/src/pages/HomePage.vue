@@ -225,23 +225,12 @@ const goToLogin = () => {
   router.push({ name: 'login' });
 };
 
-const openLogoutModal = () => {
+const goToMyPage = () => {
   if (!isLoggedIn.value) {
     return;
   }
 
-  isLogoutModalOpen.value = true;
-};
-
-const closeLogoutModal = () => {
-  isLogoutModalOpen.value = false;
-};
-
-const confirmLogout = () => {
-  authStore.logout();
-  momoStore.resetMomoData();
-  isLogoutModalOpen.value = false;
-  router.push({ name: 'login' });
+  router.push({ name: 'momo/mypage' });
 };
 
 watch(
@@ -276,9 +265,9 @@ onMounted(() => {
           v-if="isLoggedIn"
           type="button"
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm transition active:scale-95"
-          @click="openLogoutModal"
+          @click="goToMyPage"
         >
-          <i class="fas fa-right-from-bracket text-[18px]"></i>
+          <i class="fas fa-user text-[18px]"></i>
         </button>
       </header>
 
