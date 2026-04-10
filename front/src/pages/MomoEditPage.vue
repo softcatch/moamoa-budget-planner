@@ -366,9 +366,9 @@ watch(
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#eaf3ef] px-4 py-5 text-slate-900 md:px-8">
+  <main class="min-h-screen bg-[#eaf3ef] px-3 py-5 text-slate-900 md:px-8">
     <div
-      class="mx-auto min-h-[calc(100vh-2.5rem)] w-full max-w-[480px] rounded-[32px] bg-[#F4F7F6] px-5 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:max-w-[1040px] lg:px-8 lg:py-8"
+      class="mx-auto min-h-[calc(100vh-2.5rem)] w-full max-w-[480px] rounded-[32px] bg-[#F4F7F6] px-4 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:max-w-[1040px] lg:px-8 lg:py-8"
     >
       <section class="flex items-center justify-between">
         <button
@@ -451,9 +451,9 @@ watch(
         </div>
       </section>
 
-      <section class="mt-7 grid gap-4 px-4 sm:px-0 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start lg:gap-x-10 lg:gap-y-4">
+      <section class="mt-7 grid gap-4 px-1 sm:px-0 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start lg:gap-x-10 lg:gap-y-4">
         <div class="mx-auto mb-4 flex w-full max-w-[420px] flex-col items-center lg:col-start-1 lg:row-start-1 lg:mb-0">
-          <section class="w-full rounded-[24px] bg-white/70 px-4 py-8 shadow-sm">
+          <section class="w-full rounded-[24px] bg-white/70 px-3 py-8 shadow-sm sm:px-4">
             <div class="inline-flex w-full items-center justify-center">
               <input
                 ref="amountInput"
@@ -475,25 +475,25 @@ watch(
             </div>
 
             <div
-              class="mt-5 flex w-full flex-wrap items-center justify-center gap-3"
+              class="mt-5 flex w-full flex-wrap items-center justify-center gap-2.5"
             >
               <button
                 type="button"
-                class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
+                class="h-[48px] min-w-[84px] rounded-[16px] border border-slate-300 bg-white px-3 text-[16px] font-medium text-slate-700 sm:min-w-[92px] sm:px-4"
                 @click="addQuickAmount(10000)"
               >
                 +1만원
               </button>
               <button
                 type="button"
-                class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
+                class="h-[48px] min-w-[84px] rounded-[16px] border border-slate-300 bg-white px-3 text-[16px] font-medium text-slate-700 sm:min-w-[92px] sm:px-4"
                 @click="addQuickAmount(50000)"
               >
                 +5만원
               </button>
               <button
                 type="button"
-                class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
+                class="h-[48px] min-w-[84px] rounded-[16px] border border-slate-300 bg-white px-3 text-[16px] font-medium text-slate-700 sm:min-w-[92px] sm:px-4"
                 @click="addQuickAmount(100000)"
               >
                 +10만원
@@ -509,10 +509,10 @@ watch(
           </section>
         </div>
 
-        <section class="w-full rounded-[24px] bg-white p-5 shadow-sm lg:col-start-2 lg:row-span-4 lg:row-start-1">
+        <section class="w-full rounded-[24px] bg-white p-4 shadow-sm lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:p-5">
           <h2 class="text-[28px] font-extrabold text-slate-900">카테고리</h2>
 
-          <div class="mt-6 grid grid-cols-4 gap-x-3 gap-y-5">
+          <div class="mt-6 grid grid-cols-4 gap-x-2 gap-y-5 sm:gap-x-3">
             <button
               v-for="category in currentCategories"
               :key="category.key"
