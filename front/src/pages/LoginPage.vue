@@ -170,7 +170,7 @@ const switchMode = (nextMode) => {
                   v-model="form.password"
                   type="password"
                   autocomplete="current-password"
-                  placeholder="비밀번호를 입력하세요"
+                  placeholder="[보안 주의] 평소 사용하시는 중요한 비밀번호를 입력하지 마세요."
                   class="h-[52px] w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:bg-white"
                 />
               </div>
