@@ -399,7 +399,9 @@ watch(
     <div
       class="mx-auto min-h-[calc(100vh-2.5rem)] w-full max-w-[480px] rounded-[32px] bg-[#F4F7F6] px-4 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:max-w-[1040px] lg:px-8 lg:py-8"
     >
-      <section class="flex items-center justify-between">
+      <section
+        class="-mx-4 -mt-5 sticky top-0 z-40 mb-2 flex items-center justify-between bg-[#F4F7F6] px-4 py-5 lg:-mx-8 lg:-mt-8 lg:px-8 lg:pt-8"
+      >
         <button
           type="button"
           class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[22px] text-slate-900 shadow-sm"
