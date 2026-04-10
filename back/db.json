@@ -17,6 +17,12 @@
       "username": "ddong",
       "password": "123",
       "name": "똥"
+    },
+    {
+      "id": "u1775801643898",
+      "username": "999",
+      "password": "999",
+      "name": "알빠sn"
     }
   ],
   "transactions": [
@@ -235,6 +241,141 @@
       "amount": 300000,
       "desc": "성과급",
       "category": "보너스"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "expense",
+      "amount": 200000,
+      "desc": "",
+      "category": "생필품",
+      "id": "yUx7t4g"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "income",
+      "amount": 80000,
+      "desc": "",
+      "category": "보너스",
+      "id": "Kk1iNKQ"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "income",
+      "amount": 300000,
+      "desc": "",
+      "category": "보너스",
+      "id": "1Dh-tSb"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "income",
+      "amount": 150000,
+      "desc": "",
+      "category": "부수입",
+      "id": "pim6USP"
+    },
+    {
+      "id": "9Cwl-yP",
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "expense",
+      "amount": 13000,
+      "desc": "",
+      "category": "교통"
+    },
+    {
+      "id": "hzbvJTA",
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "expense",
+      "amount": 200000,
+      "desc": "",
+      "category": "교육"
+    },
+    {
+      "id": "Q2el5tz",
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "expense",
+      "amount": 9000,
+      "desc": "",
+      "category": "통신비"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "income",
+      "amount": 200000,
+      "desc": "",
+      "category": "기타",
+      "id": "HlPucpJ"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "expense",
+      "amount": 100000,
+      "desc": "",
+      "category": "공과금",
+      "id": "O6NAipo"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "expense",
+      "amount": 150000,
+      "desc": "",
+      "category": "의료비",
+      "id": "i5GKu36"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "expense",
+      "amount": 150000,
+      "desc": "",
+      "category": "공과금",
+      "id": "kxM9vj8"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-15",
+      "type": "expense",
+      "amount": 150000,
+      "desc": "",
+      "category": "공과금",
+      "id": "hACk9qw"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "expense",
+      "amount": 300000,
+      "desc": "",
+      "category": "의료비",
+      "id": "VCv88fk"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-04-10",
+      "type": "expense",
+      "amount": 100000,
+      "desc": "",
+      "category": "공과금",
+      "id": "-kgg_EL"
+    },
+    {
+      "userId": "u1775801643898",
+      "date": "2026-05-09",
+      "type": "expense",
+      "amount": 213,
+      "desc": "",
+      "category": "공과금",
+      "id": "PmlCpLo"
     }
   ],
   "momoData": [
@@ -269,6 +410,18 @@
       "momoExp": 990,
       "momoLevel": 1,
       "momoMission": "교통",
+      "momoMissionAssignedAt": "2026-04-10",
+      "momoMissionSettled": false,
+      "momoAttendance": 1,
+      "momoFinalAttendance": "2026-04-10"
+    },
+    {
+      "id": "m1775801643941",
+      "userId": "u1775801643898",
+      "isMomoHappy": true,
+      "momoExp": 1000,
+      "momoLevel": 2,
+      "momoMission": "카페/간식",
       "momoMissionAssignedAt": "2026-04-10",
       "momoMissionSettled": false,
       "momoAttendance": 1,
