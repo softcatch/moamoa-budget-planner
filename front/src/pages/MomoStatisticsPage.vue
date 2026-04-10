@@ -133,24 +133,24 @@ const selectedDate = ref(new Date());
 const showCalendar = ref(false);
 const pickerYear = ref(selectedDate.value.getFullYear());
 
-const CATEGORY_COLORS = [
-  '#00C875',
-  '#FFB300',
-  '#FF3D71',
-  '#3366FF',
-  '#8F9BB3',
-  '#7C4DFF',
-  '#00B8D9',
-  '#FF6F61',
-  '#2E7D32',
-  '#C2185B',
-  '#5D4037',
-  '#3949AB',
-  '#00897B',
-  '#F4511E',
-  '#6D4C41',
-  '#546E7A',
-];
+const CATEGORY_FALLBACK_COLOR = '#64748b';
+const ICON_COLOR_MAP = {
+  'text-amber-500': '#f59e0b',
+  'text-sky-500': '#0ea5e9',
+  'text-slate-500': '#64748b',
+  'text-rose-500': '#f43f5e',
+  'text-fuchsia-500': '#d946ef',
+  'text-zinc-500': '#71717a',
+  'text-indigo-500': '#6366f1',
+  'text-violet-500': '#8b5cf6',
+  'text-emerald-500': '#10b981',
+  'text-pink-500': '#ec4899',
+  'text-orange-500': '#f97316',
+  'text-red-500': '#ef4444',
+  'text-cyan-500': '#06b6d4',
+  'text-blue-500': '#3b82f6',
+  'text-yellow-500': '#eab308',
+};
 const monthOptions = [
   { value: 1, label: '1월' },
   { value: 2, label: '2월' },
@@ -224,11 +224,19 @@ watch(
 // ==========================================
 // 데이터 통계 로직
 // ==========================================
+const getCategoryColor = (category) => {
+  const iconColorClass = category.iconClass
+    ?.split(' ')
+    .find((className) => className.startsWith('text-'));
+
+  return ICON_COLOR_MAP[iconColorClass] || CATEGORY_FALLBACK_COLOR;
+};
+
 const currentCategoryMeta = computed(() => {
-  return categoryMap[type.value].reduce((metaMap, category, index) => {
+  return categoryMap[type.value].reduce((metaMap, category) => {
     const meta = {
       label: category.label,
-      color: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+      color: getCategoryColor(category),
     };
 
     metaMap[category.key] = meta;
@@ -266,11 +274,7 @@ const topCategories = computed(() => {
           name: meta?.label || rawCategory,
           count: 0,
           amount: 0,
-          color:
-            meta?.color ||
-            CATEGORY_COLORS[
-            Object.keys(statsMap).length % CATEGORY_COLORS.length
-            ],
+          color: meta?.color || CATEGORY_FALLBACK_COLOR,
         };
       }
 
