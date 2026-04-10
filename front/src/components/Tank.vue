@@ -99,7 +99,7 @@ const waterToneClass = computed(() => {
       <div class="absolute bottom-[20px] right-12 h-3 w-9 bg-[#2b7d4a]"></div>
       <div class="absolute bottom-[20px] right-5 h-3 w-8 bg-[#3f9860]"></div>
 
-      <div class="absolute inset-x-3 bottom-[20px] flex items-end gap-[6px]">
+      <div class="absolute bottom-[20px] left-1/2 flex -translate-x-1/2 items-end gap-[6px]">
         <div class="h-3 w-3 bg-[#e7ddd5]"></div>
         <div class="h-4 w-4 bg-[#d5d0cb]"></div>
         <div class="h-5 w-7 bg-[#b1aea9]"></div>
