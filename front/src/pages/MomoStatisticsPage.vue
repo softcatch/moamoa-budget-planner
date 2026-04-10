@@ -1,80 +1,48 @@
 <template>
   <main class="min-h-screen bg-[#eaf3ef] px-4 py-5 pb-[112px] font-sans text-slate-900 md:px-8 lg:pb-10 lg:pr-[120px]">
     <div
-      class="relative mx-auto min-h-[calc(100vh-2.5rem)] w-full max-w-[480px] rounded-[32px] bg-[#F8F9FA] px-5 pt-5 pb-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:max-w-[1040px] lg:px-8 lg:py-7"
-    >
-      <AppHeader
-        title="통계"
-        subtitle="월별 수입과 지출 흐름을 확인할 수 있어요"
-        iconClass="fa-solid fa-chart-pie"
-      />
+      class="relative mx-auto min-h-[calc(100vh-2.5rem)] w-full max-w-[480px] rounded-[32px] bg-[#F8F9FA] px-5 pt-5 pb-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:max-w-[1040px] lg:px-8 lg:py-7">
+      <AppHeader title="통계" subtitle="월별 수입과 지출 흐름을 확인할 수 있어요" iconClass="fa-solid fa-chart-pie" />
 
       <section class="relative mb-5 flex items-center justify-between gap-4">
         <div class="flex justify-center">
-          <div
-            class="flex h-11 w-[140px] overflow-hidden rounded-[18px] bg-slate-100 shadow-inner"
-          >
-            <button
-              type="button"
-              class="w-1/2 text-sm font-bold transition-colors duration-200"
-              :class="
-                type === 'expense'
-                  ? 'bg-[#E96B5F] text-white rounded-[18px] shadow-md'
-                  : 'text-zinc-400'
-              "
-              @click="changeType('expense')"
-            >
+          <div class="flex h-11 w-[140px] overflow-hidden rounded-[18px] bg-slate-100 shadow-inner">
+            <button type="button" class="w-1/2 text-sm font-bold transition-colors duration-200" :class="type === 'expense'
+                ? 'bg-[#E96B5F] text-white rounded-[18px] shadow-md'
+                : 'text-zinc-400'
+              " @click="changeType('expense')">
               지출
             </button>
-            <button
-              type="button"
-              class="w-1/2 text-sm font-bold transition-colors duration-200"
-              :class="
-                type === 'income'
-                  ? 'bg-emerald-500 text-white rounded-[18px] shadow-md'
-                  : 'text-zinc-400'
-              "
-              @click="changeType('income')"
-            >
+            <button type="button" class="w-1/2 text-sm font-bold transition-colors duration-200" :class="type === 'income'
+                ? 'bg-emerald-500 text-white rounded-[18px] shadow-md'
+                : 'text-zinc-400'
+              " @click="changeType('income')">
               수입
             </button>
           </div>
         </div>
 
-        <div
-          v-if="showCalendar"
-          class="absolute top-full right-0 z-50 mt-2 w-[300px] max-w-[calc(100vw-48px)] rounded-[24px] border border-slate-200 bg-white p-2 shadow-lg"
-        >
+        <div v-if="showCalendar"
+          class="absolute top-full right-0 z-50 mt-2 w-[300px] max-w-[calc(100vw-48px)] rounded-[24px] border border-slate-200 bg-white p-2 shadow-lg">
           <section class="rounded-[20px] p-3">
             <div class="mb-3 flex items-center justify-between">
-              <button
-                type="button"
+              <button type="button"
                 class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
-                @click="movePickerYear(-1)"
-              >
+                @click="movePickerYear(-1)">
                 <i class="fa-solid fa-chevron-left text-xs"></i>
               </button>
-              <strong class="text-base font-bold text-slate-900"
-                >{{ pickerYear }}년</strong
-              >
-              <button
-                type="button"
+              <strong class="text-base font-bold text-slate-900">{{ pickerYear }}년</strong>
+              <button type="button"
                 class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
-                @click="movePickerYear(1)"
-              >
+                @click="movePickerYear(1)">
                 <i class="fa-solid fa-chevron-right text-xs"></i>
               </button>
             </div>
 
             <div class="grid grid-cols-3 gap-2">
-              <button
-                v-for="month in monthOptions"
-                :key="month.value"
-                type="button"
+              <button v-for="month in monthOptions" :key="month.value" type="button"
                 class="rounded-[16px] px-3 py-3 text-sm font-semibold transition"
-                :class="getMonthButtonClass(month.value)"
-                @click="selectMonth(month.value)"
-              >
+                :class="getMonthButtonClass(month.value)" @click="selectMonth(month.value)">
                 {{ month.label }}
               </button>
             </div>
@@ -83,13 +51,9 @@
 
         <div
           class="flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2.5 font-semibold shadow-sm hover:bg-gray-50"
-          @click="openMonthPicker"
-        >
+          @click="openMonthPicker">
           <span>{{ currentYear }}년 {{ currentMonth }}월</span>
-          <i
-            class="fa-solid fa-chevron-down text-sm"
-            :class="{ 'rotate-180 transition-transform': showCalendar }"
-          ></i>
+          <i class="fa-solid fa-chevron-down text-sm" :class="{ 'rotate-180 transition-transform': showCalendar }"></i>
         </div>
       </section>
 
@@ -97,20 +61,14 @@
         <div class="space-y-5">
           <section class="rounded-3xl bg-white p-6 shadow-sm">
             <div class="mb-2 flex justify-between gap-3">
-              <span class="text-sm font-medium text-gray-700"
-                >이번 달 총 {{ type === 'expense' ? '지출' : '수입' }}</span
-              >
-              <span class="text-sm text-gray-400"
-                >카테고리 {{ topCategories.length }}개</span
-              >
+              <span class="text-sm font-medium text-gray-700">이번 달 총 {{ type === 'expense' ? '지출' : '수입' }}</span>
+              <span class="text-sm text-gray-400">카테고리 {{ topCategories.length }}개</span>
             </div>
             <div class="flex items-end justify-between gap-3">
-              <h2
-                :class="[
-                  'text-3xl font-extrabold',
-                  type === 'expense' ? 'text-[#E96B5F]' : 'text-emerald-500',
-                ]"
-              >
+              <h2 :class="[
+                'text-3xl font-extrabold',
+                type === 'expense' ? 'text-[#E96B5F]' : 'text-emerald-500',
+              ]">
                 ₩{{ totalAmount.toLocaleString() }}
               </h2>
             </div>
@@ -121,22 +79,17 @@
               <Doughnut :data="chartData" :options="chartOptions" />
             </div>
             <div class="flex flex-wrap justify-center gap-4">
-              <div
-                v-for="item in topCategories"
-                :key="item.id"
-                class="flex items-center gap-2 text-[13px] font-medium text-slate-600"
-              >
-                <span
-                  class="h-3 w-3 rounded-full"
-                  :style="{ backgroundColor: item.color }"
-                ></span>
+              <div v-for="item in topCategories" :key="item.id"
+                class="flex items-center gap-2 text-[13px] font-medium text-slate-600">
+                <span class="h-3 w-3 rounded-full" :style="{ backgroundColor: item.color }"></span>
                 <span>{{ item.name }}</span>
               </div>
             </div>
           </section>
         </div>
 
-        <section class="rounded-[24px] bg-white p-5 shadow-sm lg:sticky lg:top-7 lg:max-h-[calc(100vh-56px)] lg:overflow-y-auto">
+        <section
+          class="rounded-[24px] bg-white p-5 shadow-sm lg:sticky lg:top-7 lg:max-h-[calc(100vh-56px)] lg:overflow-y-auto">
           <div class="mb-4 flex items-center justify-between px-1">
             <h3 class="text-lg font-bold text-slate-900">
               {{ type === 'expense' ? '지출' : '수입' }} 상세 내역
@@ -144,14 +97,9 @@
           </div>
 
           <div class="flex flex-col gap-3">
-            <TransactionCard
-              v-for="topCategory in sortedCategories"
-              :key="topCategory.id"
-              :type="type"
-              :category="topCategory.name"
-              :desc="topCategory.name + ' 합계'"
-              :amount="topCategory.amount"
-            />
+            <TransactionCard v-for="topCategory in sortedCategories" :key="topCategory.id" :type="type"
+              :category="topCategory.name" :desc="topCategory.name + ' 합계'" :amount="topCategory.amount"
+              :clickable="false" />
           </div>
         </section>
       </div>
@@ -321,7 +269,7 @@ const topCategories = computed(() => {
           color:
             meta?.color ||
             CATEGORY_COLORS[
-              Object.keys(statsMap).length % CATEGORY_COLORS.length
+            Object.keys(statsMap).length % CATEGORY_COLORS.length
             ],
         };
       }
