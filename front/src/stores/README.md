@@ -26,7 +26,9 @@ const momoStore = useMomoStore();
   isMomoHappy: boolean,
   momoExp: number,
   momoLevel: number,
-  momoMission: string,
+  momoMission: string, // 카테고리 라벨
+  momoMissionAssignedAt: string,
+  momoMissionSettled: boolean,
   momoAttendance: number,
   momoFinalAttendance: string
 }
@@ -40,6 +42,8 @@ const momoStore = useMomoStore();
   momoExp?: number,
   momoLevel?: number,
   momoMission?: string,
+  momoMissionAssignedAt?: string,
+  momoMissionSettled?: boolean,
   momoAttendance?: number,
   momoFinalAttendance?: string
 }
@@ -54,6 +58,8 @@ const momoStore = useMomoStore();
   momoExp?: number,
   momoLevel?: number,
   momoMission?: string,
+  momoMissionAssignedAt?: string,
+  momoMissionSettled?: boolean,
   momoAttendance?: number,
   momoFinalAttendance?: string
 }
@@ -102,6 +108,8 @@ const momoStore = useMomoStore();
 - `momoExp: Ref<number>`
 - `momoLevel: Ref<number>`
 - `momoMission: Ref<string>`
+- `momoMissionAssignedAt: Ref<string>`
+- `momoMissionSettled: Ref<boolean>`
 - `momoAttendance: Ref<number>`
 - `momoFinalAttendance: Ref<string>`
 
@@ -167,7 +175,8 @@ await momoStore.editMomoData('1111', {
 - `updateIsMomoHappy(userId, isHappy)` → `Promise<MomoData>`
 - `updateMomoExp(userId, exp)` → `Promise<MomoData>`
 - `updateMomoLevel(userId, level)` → `Promise<MomoData>`
-- `updateMomoMission(userId, mission)` → `Promise<MomoData>`
+- `updateMomoMission(userId, missionCategory, assignedAt?)` → `Promise<MomoData>`
+- `settleMomoMission(userId, { missionCategory, missionAssignedAt })` → `Promise<{ isSuccess: boolean, matchedTransactions: Transaction[] }>`
 - `updateMomoAttendance(userId, attendance, finalAttendance?)` → `Promise<MomoData>`
 
 ```js
