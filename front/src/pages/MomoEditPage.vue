@@ -71,8 +71,25 @@ const amountInputWidth = computed(() => {
   return `${Math.max(displayAmount.value.length, 1)}ch`;
 });
 
+const findCategoryByValue = (categoryValue, categoryType = type.value) => {
+  const categories = categoryMap[categoryType] || [];
+
+  return categories.find(
+    (category) =>
+      category.key === categoryValue || category.label === categoryValue,
+  );
+};
+
+const getCategoryKey = (categoryValue, categoryType = type.value) => {
+  return findCategoryByValue(categoryValue, categoryType)?.key ?? categoryValue;
+};
+
+const getCategoryLabel = (categoryValue, categoryType = type.value) => {
+  return findCategoryByValue(categoryValue, categoryType)?.label ?? categoryValue;
+};
+
 const currentCategories = computed(() => {
-  return categoryMap[type.value];
+  return categoryMap[type.value] || [];
 });
 
 const isEditMode = computed(() => {
@@ -104,7 +121,7 @@ const transactionPayload = computed(() => {
     type: type.value,
     amount: parseAmount(amount.value),
     desc: memo.value.trim(),
-    category: selectedCategory.value,
+    category: getCategoryLabel(selectedCategory.value, type.value),
   };
 });
 
@@ -208,7 +225,7 @@ const resetForm = () => {
 
 const applyTransactionToForm = (transaction) => {
   type.value = transaction.type;
-  selectedCategory.value = transaction.category;
+  selectedCategory.value = getCategoryKey(transaction.category, transaction.type);
   amount.value = String(transaction.amount ?? '');
   memo.value = transaction.desc ?? '';
 
@@ -323,7 +340,8 @@ watch(
 </script>
 
 <template>
-  <div>
+  <main class="min-h-screen bg-[#eaf3ef] px-4 py-5 text-slate-900 md:px-8">
+    <div class="mx-auto w-full max-w-[480px] rounded-[32px] bg-[#F4F7F6] px-5 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] md:max-w-[720px] md:px-8 md:py-7">
     <section class="flex items-center justify-between">
       <button
         type="button"
@@ -534,7 +552,8 @@ watch(
         </section>
       </div>
     </section>
-  </div>
+    </div>
+  </main>
 </template>
 
 <style scoped></style>
