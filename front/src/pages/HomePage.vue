@@ -15,7 +15,6 @@ const authStore = useAuthStore();
 const momoStore = useMomoStore();
 
 const isMissionModalOpen = ref(false);
-const isLogoutModalOpen = ref(false);
 
 const ensureSession = () => {
   authStore.restoreSession();
@@ -223,23 +222,12 @@ const goToLogin = () => {
   router.push({ name: 'login' });
 };
 
-const openLogoutModal = () => {
+const goToMyPage = () => {
   if (!isLoggedIn.value) {
     return;
   }
 
-  isLogoutModalOpen.value = true;
-};
-
-const closeLogoutModal = () => {
-  isLogoutModalOpen.value = false;
-};
-
-const confirmLogout = () => {
-  authStore.logout();
-  momoStore.resetMomoData();
-  isLogoutModalOpen.value = false;
-  router.push({ name: 'login' });
+  router.push({ name: 'momo/mypage' });
 };
 
 watch(
@@ -274,9 +262,9 @@ onMounted(() => {
           v-if="isLoggedIn"
           type="button"
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm transition active:scale-95"
-          @click="openLogoutModal"
+          @click="goToMyPage"
         >
-          <i class="fas fa-right-from-bracket text-[18px]"></i>
+          <i class="fas fa-user text-[18px]"></i>
         </button>
       </header>
 
@@ -338,37 +326,5 @@ onMounted(() => {
       @close="isMissionModalOpen = false"
       @update:modelValue="isMissionModalOpen = $event"
     />
-
-    <teleport to="body">
-      <div
-        v-if="isLogoutModalOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4"
-        @click.self="closeLogoutModal"
-      >
-        <section class="w-full max-w-[340px] rounded-[28px] bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.24)]">
-          <h2 class="text-xl font-bold text-slate-900">로그아웃 하시겠습니까?</h2>
-          <p class="mt-2 text-sm text-slate-500">
-            현재 세션이 종료되고 로그인 화면으로 이동합니다.
-          </p>
-
-          <div class="mt-6 grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              class="rounded-[18px] bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-600"
-              @click="closeLogoutModal"
-            >
-              취소
-            </button>
-            <button
-              type="button"
-              class="rounded-[18px] bg-[linear-gradient(135deg,#38d39f_0%,#1fb6a6_100%)] px-4 py-3 text-sm font-semibold text-white"
-              @click="confirmLogout"
-            >
-              로그아웃
-            </button>
-          </div>
-        </section>
-      </div>
-    </teleport>
   </main>
 </template>
