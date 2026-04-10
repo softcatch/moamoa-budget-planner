@@ -72,7 +72,7 @@ const getDayTotalClass = (day) => {
 </script>
 
 <template>
-  <div class="calendar-wrap flex justify-center">
+  <div class="calendar-wrap flex w-full justify-center">
     <VCalendar
       :attributes="calendarAttributes"
       :masks="masks"
@@ -130,7 +130,7 @@ const getDayTotalClass = (day) => {
   right: 6px;
 }
 :deep(.vc-container) {
-  transform: scale(1.4);
-  transform-origin: top center;
+  width: 100%;
+  max-width: 100%;
 }
 </style>

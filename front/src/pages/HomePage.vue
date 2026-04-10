@@ -261,9 +261,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#eaf3ef] px-4 py-5 text-slate-900">
+  <main class="min-h-screen bg-[#eaf3ef] px-4 py-5 pb-[112px] text-slate-900 md:px-8 lg:pb-10 lg:pr-[120px]">
     <section
-      class="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full max-w-[390px] flex-col rounded-[32px] border border-white/70 bg-[#f4f7f6] p-5 shadow-[0_18px_60px_rgba(15,23,42,0.10)]"
+      class="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full max-w-[480px] flex-col rounded-[32px] border border-white/70 bg-[#f4f7f6] p-5 shadow-[0_18px_60px_rgba(15,23,42,0.10)] lg:max-w-[1040px] lg:p-8"
     >
       <header class="mb-5 flex items-center justify-between gap-4">
         <h1 class="text-[28px] font-bold leading-tight text-slate-900">
@@ -280,43 +280,53 @@ onMounted(() => {
         </button>
       </header>
 
-      <Tank :level="displayLevel" :isHappy="displayIsHappy">
-        <Momo
-          :level="displayLevel"
-          :isHappy="displayIsHappy"
-          :monthly-state="monthlyBalanceState"
-        />
-      </Tank>
+      <div class="grid flex-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.8fr)] lg:items-start lg:gap-6">
+        <section class="space-y-5">
+          <Tank :level="displayLevel" :isHappy="displayIsHappy">
+            <Momo
+              :level="displayLevel"
+              :isHappy="displayIsHappy"
+              :monthly-state="monthlyBalanceState"
+            />
+          </Tank>
 
-      <template v-if="isLoggedIn">
-        <div class="mt-5">
-          <ExpBar :level="displayLevel" :exp="displayExp" />
-        </div>
+          <div v-if="isLoggedIn" class="lg:hidden">
+            <ExpBar :level="displayLevel" :exp="displayExp" />
+          </div>
+        </section>
 
-        <div class="mt-5 grid grid-cols-2 gap-3">
-          <Attendance
-            :checkedInToday="hasCheckedInToday"
-            :attendance="momoStore.momoAttendance"
-            :loading="momoStore.isFetching"
-            @attend="handleAttendance"
-          />
+        <section class="space-y-5 lg:pt-1">
+          <template v-if="isLoggedIn">
+            <div class="hidden lg:block">
+              <ExpBar :level="displayLevel" :exp="displayExp" />
+            </div>
 
-          <Mission
-            :missionText="missionText"
-            :disabled="hasMissionForToday"
-            @open="openMissionModal"
-          />
-        </div>
-      </template>
+            <div class="grid grid-cols-2 gap-3 lg:grid-cols-1">
+              <Attendance
+                :checkedInToday="hasCheckedInToday"
+                :attendance="momoStore.momoAttendance"
+                :loading="momoStore.isFetching"
+                @attend="handleAttendance"
+              />
 
-      <button
-        v-else
-        type="button"
-        class="mt-5 flex min-h-[140px] w-full items-center justify-center rounded-[28px] bg-[linear-gradient(135deg,#38d39f_0%,#1fb6a6_100%)] px-6 text-center text-xl font-bold text-white shadow-[0_18px_40px_rgba(31,182,166,0.28)] transition active:scale-[0.99]"
-        @click="goToLogin"
-      >
-        로그인하고 모모 키우기
-      </button>
+              <Mission
+                :missionText="missionText"
+                :disabled="hasMissionForToday"
+                @open="openMissionModal"
+              />
+            </div>
+          </template>
+
+          <button
+            v-else
+            type="button"
+            class="flex min-h-[140px] w-full items-center justify-center rounded-[28px] bg-[linear-gradient(135deg,#38d39f_0%,#1fb6a6_100%)] px-6 text-center text-xl font-bold text-white shadow-[0_18px_40px_rgba(31,182,166,0.28)] transition active:scale-[0.99]"
+            @click="goToLogin"
+          >
+            로그인하고 모모 키우기
+          </button>
+        </section>
+      </div>
     </section>
 
     <MissionDetail
