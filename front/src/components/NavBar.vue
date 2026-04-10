@@ -5,14 +5,14 @@
     >
       <router-link
         :to="{ name: 'momo/edit' }"
-        class="absolute bottom-[39px] left-1/2 -translate-x-1/2 w-[56px] h-[56px] bg-emerald-500 rounded-full flex justify-center items-center text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)] transition-transform duration-300 hover:scale-110 active:scale-95 lg:static lg:translate-x-0"
+        class="order-3 flex h-[56px] w-[56px] items-center justify-center rounded-full bg-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)] transition-transform duration-300 hover:scale-110 active:scale-95 lg:order-none"
       >
         <i class="fas fa-plus text-[24px]"></i>
       </router-link>
 
       <router-link
         :to="{ name: 'home' }"
-        class="group flex flex-col items-center text-slate-400 text-xs transition-all duration-300 [&.active]:text-emerald-500 [&.active]:font-bold"
+        class="group order-1 flex flex-col items-center text-slate-400 text-xs transition-all duration-300 lg:order-none [&.active]:text-emerald-500 [&.active]:font-bold"
         exact-active-class="active"
       >
         <i
@@ -23,7 +23,7 @@
 
       <router-link
         :to="{ name: 'momo/monthly' }"
-        class="group flex flex-col items-center text-slate-400 text-xs transition-all duration-300 [&.active]:text-emerald-500 [&.active]:font-bold"
+        class="group order-2 flex flex-col items-center text-slate-400 text-xs transition-all duration-300 lg:order-none [&.active]:text-emerald-500 [&.active]:font-bold"
         active-class="active"
       >
         <i
@@ -34,7 +34,7 @@
 
       <router-link
         :to="{ name: 'momo/statistics' }"
-        class="group flex flex-col items-center text-slate-400 text-xs transition-all duration-300 [&.active]:text-emerald-500 [&.active]:font-bold"
+        class="group order-4 flex flex-col items-center text-slate-400 text-xs transition-all duration-300 lg:order-none [&.active]:text-emerald-500 [&.active]:font-bold"
         active-class="active"
       >
         <i
@@ -45,7 +45,7 @@
 
       <router-link
         :to="{ name: 'momo/full-list' }"
-        class="group flex flex-col items-center text-slate-400 text-xs transition-all duration-300 [&.active]:text-emerald-500 [&.active]:font-bold"
+        class="group order-5 flex flex-col items-center text-slate-400 text-xs transition-all duration-300 lg:order-none [&.active]:text-emerald-500 [&.active]:font-bold"
         active-class="active"
       >
         <i
