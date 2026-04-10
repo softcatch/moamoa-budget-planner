@@ -4,6 +4,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  showGuideButton: {
+    type: Boolean,
+    default: false,
+  },
   rewardLabel: {
     type: String,
     default: '',
@@ -14,7 +18,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['open']);
+const emit = defineEmits(['open', 'open-guide']);
 
 const handleClick = () => {
   if (props.disabled) {
@@ -22,6 +26,11 @@ const handleClick = () => {
   }
 
   emit('open');
+};
+
+const handleGuideClick = (event) => {
+  event.stopPropagation();
+  emit('open-guide');
 };
 </script>
 
@@ -33,9 +42,22 @@ const handleClick = () => {
     :aria-disabled="disabled"
     @click="handleClick"
   >
-    <p class="text-xs font-semibold tracking-[0.14em] text-emerald-600">MISSION</p>
+    <div class="flex items-center justify-between gap-3">
+      <p class="text-xs font-semibold tracking-[0.14em] text-emerald-600">MISSION</p>
 
-    <div class="mt-3 flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+      <button
+        v-if="showGuideButton"
+        type="button"
+        class="-mt-2 flex h-8 shrink-0 items-center justify-center gap-1 rounded-full bg-emerald-50 px-2 text-emerald-600 transition active:scale-95"
+        aria-label="미션 도움말 보기"
+        @click="handleGuideClick"
+      >
+        <i class="fa-solid fa-book-open text-[15px]"></i>
+        <i class="fa-solid fa-circle-question text-[14px]"></i>
+      </button>
+    </div>
+
+    <div class="mt-2 flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
       <p class="line-clamp-2 text-lg font-bold leading-snug">
         {{ missionText || '\uBBF8\uC158 \uBC1B\uAE30' }}
       </p>
