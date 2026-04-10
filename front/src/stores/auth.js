@@ -212,6 +212,90 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  const updateName = async (name) => {
+    isFetching.value = true;
+    clearError();
+
+    try {
+      const trimmedName = name.trim();
+
+      if (!currentUserId.value) {
+        throw new Error('로그인 정보가 없습니다.');
+      }
+
+      if (!trimmedName) {
+        throw new Error('이름을 입력해주세요.');
+      }
+
+      const response = await axios.patch(`${BASE_URL}/users/${currentUserId.value}`, {
+        name: trimmedName,
+      });
+
+      currentName.value = response.data.name || trimmedName;
+      persistAuth();
+
+      return response.data;
+    } catch (error) {
+      console.error('updateName error:', error);
+      isError.value = true;
+      errorMessage.value = error.message || '이름 변경 중 오류가 발생했습니다.';
+      throw error;
+    } finally {
+      isFetching.value = false;
+    }
+  };
+
+  const updatePassword = async ({
+    currentPassword,
+    nextPassword,
+    nextPasswordConfirm,
+  }) => {
+    isFetching.value = true;
+    clearError();
+
+    try {
+      const trimmedCurrentPassword = currentPassword.trim();
+      const trimmedNextPassword = nextPassword.trim();
+      const trimmedNextPasswordConfirm = nextPasswordConfirm.trim();
+
+      if (!currentUserId.value) {
+        throw new Error('로그인 정보가 없습니다.');
+      }
+
+      if (
+        !trimmedCurrentPassword ||
+        !trimmedNextPassword ||
+        !trimmedNextPasswordConfirm
+      ) {
+        throw new Error('현재 비밀번호와 바꿀 비밀번호를 모두 입력해주세요.');
+      }
+
+      if (trimmedNextPassword !== trimmedNextPasswordConfirm) {
+        throw new Error('바꿀 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+      }
+
+      const userResponse = await axios.get(`${BASE_URL}/users/${currentUserId.value}`);
+
+      if (userResponse.data.password !== trimmedCurrentPassword) {
+        throw new Error('현재 비밀번호가 일치하지 않습니다.');
+      }
+
+      const response = await axios.patch(`${BASE_URL}/users/${currentUserId.value}`, {
+        password: trimmedNextPassword,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('updatePassword error:', error);
+      isError.value = true;
+      errorMessage.value =
+        error.message || '비밀번호 변경 중 오류가 발생했습니다.';
+      throw error;
+    } finally {
+      isFetching.value = false;
+    }
+  };
+
   // 외부에서 사용할 상태 및 함수 export
   return {
     BASE_URL,
@@ -230,6 +314,8 @@ export const useAuthStore = defineStore('auth', () => {
     restoreSession,
     signup,
     login,
+    updateName,
+    updatePassword,
     logout,
   };
 });
