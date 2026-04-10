@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 // sessionStorage에 저장할 키 이름
-const STORAGE_KEY = 'moamoa-auth';
+const STORAGE_KEY = 'moamoa-auth'; 
 
 export const useAuthStore = defineStore('auth', () => {
   const BASE_URL = 'https://moamoa-budget-planner-json-server.onrender.com';
