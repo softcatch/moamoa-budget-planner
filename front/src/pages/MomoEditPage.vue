@@ -540,13 +540,20 @@ watch(
           </section>
         </div>
 
-        <section class="w-full rounded-[24px] bg-white p-4 shadow-sm lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:p-5">
-          <h2 class="text-[28px] font-extrabold text-slate-900">카테고리</h2>
+          <section class="w-full rounded-[24px] bg-white p-4 shadow-sm lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:p-5">
+            <h2 class="text-[28px] font-extrabold text-slate-900">카테고리</h2>
 
-          <div class="mt-6 grid grid-cols-4 gap-x-2 gap-y-5 sm:gap-x-3">
-            <button
-              v-for="category in currentCategories"
-              :key="category.key"
+            <p
+              v-if="formError.category"
+              class="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
+            >
+              {{ formError.category }}
+            </p>
+
+            <div class="mt-6 grid grid-cols-4 gap-x-2 gap-y-5 sm:gap-x-3">
+              <button
+                v-for="category in currentCategories"
+                :key="category.key"
               type="button"
               class="flex flex-col items-center gap-2 text-center"
               @click="selectCategory(category)"
@@ -571,13 +578,7 @@ watch(
             </button>
           </div>
 
-          <p
-            v-if="formError.category"
-            class="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
-          >
-            {{ formError.category }}
-          </p>
-        </section>
+          </section>
 
         <section class="w-full rounded-[24px] bg-white p-5 shadow-sm lg:col-start-1 lg:row-start-2">
           <h2 class="text-[28px] font-extrabold text-slate-900">메모</h2>
