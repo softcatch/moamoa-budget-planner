@@ -40,7 +40,9 @@ const matchedCategory = computed(() => {
   const list = categoryMap[props.type] || [];
 
   return (
-    list.find((item) => item.label === props.category) || {
+    list.find(
+      (item) => item.key === props.category || item.label === props.category,
+    ) || {
       icon: 'fa-solid fa-circle-question',
       iconClass: 'text-slate-400',
     }
@@ -49,6 +51,7 @@ const matchedCategory = computed(() => {
 
 const categoryIcon = computed(() => matchedCategory.value.icon);
 const categoryIconClass = computed(() => matchedCategory.value.iconClass);
+const categoryText = computed(() => matchedCategory.value.label || props.category);
 
 const handleClick = () => {
   router.push({
@@ -76,7 +79,7 @@ const handleClick = () => {
           </span>
         </div>
         <p class="mt-1 text-sm text-slate-400">
-          {{ category }}
+          {{ categoryText }}
         </p>
       </div>
     </div>
