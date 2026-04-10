@@ -25,6 +25,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  clickable: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const amountText = computed(() => {
@@ -54,6 +58,10 @@ const categoryIconClass = computed(() => matchedCategory.value.iconClass);
 const categoryText = computed(() => matchedCategory.value.label || props.category);
 
 const handleClick = () => {
+  if (!props.clickable) {
+    return;
+  }
+
   router.push({
     name: 'momo/edit', // router의 index.js에 정의해둔 라우트 name
     query: {
@@ -65,8 +73,8 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div class="flex cursor-pointer items-center justify-between rounded-[28px] bg-white px-5 py-5 shadow-sm"
-    @click="handleClick">
+  <div class="flex items-center justify-between rounded-[28px] bg-white px-5 py-5 shadow-sm"
+    :class="{ 'cursor-pointer': clickable }" @click="handleClick">
     <div class="flex items-center gap-4">
       <div class="flex h-[30px] w-[30px] items-center justify-center rounded-[20px] bg-slate-50 text-[20px]">
         <i :class="[categoryIcon, categoryIconClass]"></i>
