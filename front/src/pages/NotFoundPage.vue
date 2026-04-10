@@ -29,7 +29,9 @@ const goHome = () => {
       />
 
       <div class="mt-7">
-        <h1 class="text-[30px] font-extrabold leading-tight text-slate-900">
+        <h1
+          class="break-keep text-[28px] font-extrabold leading-tight text-slate-900 sm:text-[30px]"
+        >
           모모가 길을 잃어버렸어요
         </h1>
         <p class="mt-4 text-[15px] leading-7 text-slate-500">
