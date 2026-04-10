@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useMomoStore = defineStore('momo', () => {
-  const BASE_URL = '/api';
+  const BASE_URL = 'https://moamoa-budget-planner-json-server.onrender.com';
   const LEVEL_EXP_UNIT = 1000;
 
   // 로딩 및 에러 상태
