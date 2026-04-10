@@ -368,7 +368,7 @@ watch(
 <template>
   <main class="min-h-screen bg-[#eaf3ef] px-4 py-5 text-slate-900 md:px-8">
     <div
-      class="mx-auto w-full max-w-[480px] rounded-[32px] bg-[#F4F7F6] px-5 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] md:max-w-[720px] md:px-8 md:py-7"
+      class="mx-auto min-h-[calc(100vh-2.5rem)] w-full max-w-[480px] rounded-[32px] bg-[#F4F7F6] px-5 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:max-w-[1040px] lg:px-8 lg:py-8"
     >
       <section class="flex items-center justify-between">
         <button
@@ -451,131 +451,133 @@ watch(
         </div>
       </section>
 
-      <section class="mt-7 px-4 sm:px-0">
-        <div class="mx-auto flex w-full max-w-[420px] flex-col items-center">
-          <div class="inline-flex items-center justify-center">
-            <input
-              ref="amountInput"
-              :value="displayAmount"
-              type="text"
-              inputmode="numeric"
-              :style="{ width: amountInputWidth }"
-              class="min-w-[1ch] border-none bg-transparent p-0 text-center text-[40px] font-normal leading-[1] text-slate-900 outline-none"
-              @input="handleAmountInput"
-              @beforeinput="handleAmountBeforeInput"
-              @focus="selectAmountOnEmpty"
-              @click="selectAmountOnEmpty"
-            />
-            <span
-              class="-ml-[0.04em] inline-flex items-center text-[40px] font-normal leading-[1] text-slate-900"
-            >
-              원
-            </span>
-          </div>
-
-          <div
-            class="mt-5 flex w-full flex-wrap items-center justify-center gap-3"
-          >
-            <button
-              type="button"
-              class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
-              @click="addQuickAmount(10000)"
-            >
-              +1만원
-            </button>
-            <button
-              type="button"
-              class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
-              @click="addQuickAmount(50000)"
-            >
-              +5만원
-            </button>
-            <button
-              type="button"
-              class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
-              @click="addQuickAmount(100000)"
-            >
-              +10만원
-            </button>
-          </div>
-
-          <p
-            v-if="formError.amount"
-            class="mt-4 w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
-          >
-            {{ formError.amount }}
-          </p>
-
-          <section class="mt-11 w-full">
-            <h2 class="text-[28px] font-extrabold text-slate-900">카테고리</h2>
-
-            <div class="mt-6 grid grid-cols-4 gap-x-3 gap-y-5">
-              <button
-                v-for="category in currentCategories"
-                :key="category.key"
-                type="button"
-                class="flex flex-col items-center gap-2 text-center"
-                @click="selectCategory(category)"
+      <section class="mt-7 grid gap-4 px-4 sm:px-0 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start lg:gap-x-10 lg:gap-y-4">
+        <div class="mx-auto mb-4 flex w-full max-w-[420px] flex-col items-center lg:col-start-1 lg:row-start-1 lg:mb-0">
+          <section class="w-full rounded-[24px] bg-white/70 px-4 py-8 shadow-sm">
+            <div class="inline-flex w-full items-center justify-center">
+              <input
+                ref="amountInput"
+                :value="displayAmount"
+                type="text"
+                inputmode="numeric"
+                :style="{ width: amountInputWidth }"
+                class="min-w-[1ch] border-none bg-transparent p-0 text-center text-[40px] font-normal leading-[1] text-slate-900 outline-none"
+                @input="handleAmountInput"
+                @beforeinput="handleAmountBeforeInput"
+                @focus="selectAmountOnEmpty"
+                @click="selectAmountOnEmpty"
+              />
+              <span
+                class="-ml-[0.04em] inline-flex items-center text-[40px] font-normal leading-[1] text-slate-900"
               >
-                <span
-                  class="flex h-16 w-16 items-center justify-center rounded-[22px] text-[28px] transition"
-                  :class="getCategoryTileClass(category)"
-                >
-                  <i
-                    :class="[
-                      category.icon,
-                      isCategorySelected(category) ? '' : category.iconClass,
-                    ]"
-                  ></i>
-                </span>
-                <span
-                  class="text-[14px] font-medium leading-tight text-slate-400"
-                  :class="getCategoryLabelClass(category)"
-                >
-                  {{ category.label }}
-                </span>
+                원
+              </span>
+            </div>
+
+            <div
+              class="mt-5 flex w-full flex-wrap items-center justify-center gap-3"
+            >
+              <button
+                type="button"
+                class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
+                @click="addQuickAmount(10000)"
+              >
+                +1만원
+              </button>
+              <button
+                type="button"
+                class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
+                @click="addQuickAmount(50000)"
+              >
+                +5만원
+              </button>
+              <button
+                type="button"
+                class="h-[48px] min-w-[92px] rounded-[16px] border border-slate-300 bg-white px-4 text-[16px] font-medium text-slate-700"
+                @click="addQuickAmount(100000)"
+              >
+                +10만원
               </button>
             </div>
 
             <p
-              v-if="formError.category"
-              class="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
+              v-if="formError.amount"
+              class="mt-4 w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
             >
-              {{ formError.category }}
+              {{ formError.amount }}
             </p>
           </section>
+        </div>
 
-          <section class="mt-12 w-full">
-            <h2 class="text-[28px] font-extrabold text-slate-900">메모</h2>
+        <section class="w-full rounded-[24px] bg-white p-5 shadow-sm lg:col-start-2 lg:row-span-4 lg:row-start-1">
+          <h2 class="text-[28px] font-extrabold text-slate-900">카테고리</h2>
 
-            <div class="mt-5">
-              <input
-                v-model="memo"
-                type="text"
-                maxlength="50"
-                placeholder="메모를 입력하세요"
-                class="h-15 w-full rounded-[20px] border border-slate-200 bg-white px-5 text-[18px] font-medium text-slate-900 outline-none placeholder:text-slate-300 focus:border-slate-300"
-              />
-            </div>
-          </section>
+          <div class="mt-6 grid grid-cols-4 gap-x-3 gap-y-5">
+            <button
+              v-for="category in currentCategories"
+              :key="category.key"
+              type="button"
+              class="flex flex-col items-center gap-2 text-center"
+              @click="selectCategory(category)"
+            >
+              <span
+                class="flex h-16 w-16 items-center justify-center rounded-[22px] text-[28px] transition"
+                :class="getCategoryTileClass(category)"
+              >
+                <i
+                  :class="[
+                    category.icon,
+                    isCategorySelected(category) ? '' : category.iconClass,
+                  ]"
+                ></i>
+              </span>
+              <span
+                class="text-[14px] font-medium leading-tight text-slate-400"
+                :class="getCategoryLabelClass(category)"
+              >
+                {{ category.label }}
+              </span>
+            </button>
+          </div>
 
           <p
-            v-if="inlineErrorMessage"
-            class="mt-4 w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
+            v-if="formError.category"
+            class="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500"
           >
-            {{ inlineErrorMessage }}
+            {{ formError.category }}
           </p>
+        </section>
 
-          <section v-if="isEditMode" class="mt-8 w-full">
-            <button
-              type="button"
-              class="flex h-16 w-full items-center justify-center gap-3 rounded-[22px] bg-rose-50 text-[18px] font-bold text-rose-400 transition hover:bg-rose-100"
+        <section class="w-full rounded-[24px] bg-white p-5 shadow-sm lg:col-start-1 lg:row-start-2">
+          <h2 class="text-[28px] font-extrabold text-slate-900">메모</h2>
+
+          <div class="mt-5">
+            <input
+              v-model="memo"
+              type="text"
+              maxlength="50"
+              placeholder="메모를 입력하세요"
+              class="h-15 w-full rounded-[20px] border border-slate-200 bg-white px-5 text-[18px] font-medium text-slate-900 outline-none placeholder:text-slate-300 focus:border-slate-300"
+            />
+          </div>
+        </section>
+
+        <p
+          v-if="inlineErrorMessage"
+          class="w-full rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-500 lg:col-start-1"
+        >
+          {{ inlineErrorMessage }}
+        </p>
+
+        <section v-if="isEditMode" class="w-full lg:col-start-1">
+          <button
+            type="button"
+            class="flex h-16 w-full items-center justify-center gap-3 rounded-[22px] bg-rose-50 text-[18px] font-bold text-rose-400 transition hover:bg-rose-100"
             >
-              <i class="fa-regular fa-trash-can text-[18px]"></i>
-              <span>삭제하기</span>
-            </button>
-          </section>
-        </div>
+            <i class="fa-regular fa-trash-can text-[18px]"></i>
+            <span>삭제하기</span>
+          </button>
+        </section>
       </section>
     </div>
   </main>
