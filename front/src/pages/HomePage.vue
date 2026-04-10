@@ -145,7 +145,11 @@ const getDiffDays = (fromDate, toDate) => {
   return Math.round((to - from) / msPerDay);
 };
 
-const getAttendanceRewardExp = (attendance) => {
+const getAttendanceRewardExp = (attendance, isFirstAttendance = false) => {
+  if (isFirstAttendance) {
+    return 990;
+  }
+
   if (attendance <= 1) {
     return 10;
   }
@@ -190,6 +194,7 @@ const handleAttendance = async () => {
   const today = new Date();
   const todayString = formatDate(today);
   const lastAttendanceDate = toDateOnly(momoStore.momoFinalAttendance);
+  const isFirstAttendance = !momoStore.momoFinalAttendance;
 
   let nextAttendance = 1;
 
@@ -203,7 +208,9 @@ const handleAttendance = async () => {
     }
   }
 
-  const nextExp = momoStore.momoExp + getAttendanceRewardExp(nextAttendance);
+  const nextExp =
+    momoStore.momoExp +
+    getAttendanceRewardExp(nextAttendance, isFirstAttendance);
 
   await momoStore.updateMomoAttendance(
     effectiveUserId.value,

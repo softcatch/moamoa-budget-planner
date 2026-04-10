@@ -93,7 +93,7 @@ const closeModal = () => {
                   <span
                     class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500"
                   >
-                    Lv. 1-2
+                    Lv. 1
                   </span>
                 </div>
                 <div class="mt-3 grid grid-cols-2 gap-3">
@@ -133,7 +133,7 @@ const closeModal = () => {
                   <span
                     class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500"
                   >
-                    Lv. 3-4
+                    Lv. 2
                   </span>
                 </div>
                 <div class="mt-3 grid grid-cols-2 gap-3">
@@ -173,7 +173,7 @@ const closeModal = () => {
                   <span
                     class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500"
                   >
-                    Lv. 5+
+                    Lv. 3+
                   </span>
                 </div>
                 <div class="mt-3 grid grid-cols-2 gap-3">

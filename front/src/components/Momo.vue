@@ -24,8 +24,8 @@ const props = defineProps({
 });
 
 const MOMO_STAGE_THRESHOLDS = {
-  teen: 3,
-  adult: 5,
+  teen: 2,
+  adult: 3,
 };
 
 const imageMap = {
