@@ -221,7 +221,7 @@ const completeSettlement = async () => {
   <teleport to="body">
     <div
       v-if="props.modelValue"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4 py-8"
+      class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/35 px-4 py-8"
       @click.self="closeModal"
     >
       <section class="flex w-full max-w-[390px] flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(15,23,42,0.24)]">
