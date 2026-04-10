@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Tank from '@/components/Tank.vue';
 import Momo from '@/components/Momo.vue';
@@ -18,6 +18,9 @@ const momoStore = useMomoStore();
 const isMissionModalOpen = ref(false);
 const isLogoutModalOpen = ref(false);
 const isMomoGuideModalOpen = ref(false);
+const toastMessage = ref('');
+const isToastVisible = ref(false);
+let toastTimerId = null;
 
 const ensureSession = () => {
   authStore.restoreSession();
@@ -75,6 +78,17 @@ const missionText = computed(() => {
 });
 const hasCheckedInToday = computed(() => {
   return momoStore.momoFinalAttendance === formatDate(new Date());
+});
+const missionRewardLabel = computed(() => {
+  if (!isLoggedIn.value) {
+    return '';
+  }
+
+  if (needsMissionSettlement.value) {
+    return '+300 EXP';
+  }
+
+  return '\uC131\uACF5 \uC2DC +300 EXP';
 });
 const currentMonthKey = computed(() => {
   const today = new Date();
@@ -177,6 +191,46 @@ const getAttendanceRewardExp = (attendance, isFirstAttendance = false) => {
   return 290;
 };
 
+const nextAttendanceRewardExp = computed(() => {
+  if (!isLoggedIn.value || hasCheckedInToday.value) {
+    return 0;
+  }
+
+  const today = new Date();
+  const lastAttendanceDate = toDateOnly(momoStore.momoFinalAttendance);
+  const isFirstAttendance = !momoStore.momoFinalAttendance;
+
+  let nextAttendance = 1;
+
+  if (lastAttendanceDate) {
+    const diffDays = getDiffDays(lastAttendanceDate, today);
+
+    if (diffDays === 1) {
+      nextAttendance = momoStore.momoAttendance + 1;
+    }
+  }
+
+  return getAttendanceRewardExp(nextAttendance, isFirstAttendance);
+});
+
+const showToast = (message) => {
+  if (!message) {
+    return;
+  }
+
+  toastMessage.value = message;
+  isToastVisible.value = true;
+
+  if (toastTimerId) {
+    window.clearTimeout(toastTimerId);
+  }
+
+  toastTimerId = window.setTimeout(() => {
+    isToastVisible.value = false;
+    toastTimerId = null;
+  }, 2200);
+};
+
 const fetchHomeData = async (userId) => {
   if (!userId) {
     return;
@@ -208,9 +262,8 @@ const handleAttendance = async () => {
     }
   }
 
-  const nextExp =
-    momoStore.momoExp +
-    getAttendanceRewardExp(nextAttendance, isFirstAttendance);
+  const rewardExp = getAttendanceRewardExp(nextAttendance, isFirstAttendance);
+  const nextExp = momoStore.momoExp + rewardExp;
 
   await momoStore.updateMomoAttendance(
     effectiveUserId.value,
@@ -218,6 +271,8 @@ const handleAttendance = async () => {
     todayString,
     nextExp,
   );
+
+  showToast(`\uCD9C\uC11D \uC644\uB8CC! +${rewardExp.toLocaleString()} EXP`);
 };
 
 const openMissionModal = () => {
@@ -240,6 +295,14 @@ const goToMyPage = () => {
   router.push({ name: 'momo/mypage' });
 };
 
+const handleMissionSettled = (result) => {
+  if (!result?.isSuccess || !result.rewardExp) {
+    return;
+  }
+
+  showToast(`\uBBF8\uC158 \uC131\uACF5! +${result.rewardExp.toLocaleString()} EXP`);
+};
+
 watch(
   effectiveUserId,
   async (userId) => {
@@ -255,6 +318,12 @@ watch(
 
 onMounted(() => {
   ensureSession();
+});
+
+onBeforeUnmount(() => {
+  if (toastTimerId) {
+    window.clearTimeout(toastTimerId);
+  }
 });
 </script>
 
@@ -311,12 +380,14 @@ onMounted(() => {
               <Attendance
                 :checkedInToday="hasCheckedInToday"
                 :attendance="momoStore.momoAttendance"
+                :rewardExp="nextAttendanceRewardExp"
                 :loading="momoStore.isFetching"
                 @attend="handleAttendance"
               />
 
               <Mission
                 :missionText="missionText"
+                :rewardLabel="missionRewardLabel"
                 :disabled="hasMissionForToday"
                 @open="openMissionModal"
               />
@@ -342,6 +413,7 @@ onMounted(() => {
       :needsSettlement="needsMissionSettlement"
       :userId="effectiveUserId"
       @close="isMissionModalOpen = false"
+      @settled="handleMissionSettled"
       @update:modelValue="isMissionModalOpen = $event"
     />
 
@@ -350,6 +422,24 @@ onMounted(() => {
       @close="isMomoGuideModalOpen = false"
       @update:modelValue="isMomoGuideModalOpen = $event"
     />
+
+    <teleport to="body">
+      <transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="translate-y-2 opacity-0"
+        enter-to-class="translate-y-0 opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="translate-y-0 opacity-100"
+        leave-to-class="translate-y-2 opacity-0"
+      >
+        <div
+          v-if="isToastVisible"
+          class="fixed left-1/2 top-6 z-[10000] -translate-x-1/2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(15,23,42,0.24)]"
+        >
+          {{ toastMessage }}
+        </div>
+      </transition>
+    </teleport>
 
     <teleport to="body">
       <div

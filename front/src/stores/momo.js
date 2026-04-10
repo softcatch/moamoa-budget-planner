@@ -197,6 +197,7 @@ export const useMomoStore = defineStore('momo', () => {
     userId,
     { missionCategory, missionAssignedAt },
   ) => {
+    const successRewardExp = 300;
     const response = await axios.get(`${BASE_URL}/transactions`, {
       params: {
         userId,
@@ -215,13 +216,14 @@ export const useMomoStore = defineStore('momo', () => {
     };
 
     if (isSuccess) {
-      payload.momoExp = momoExp.value + 300;
+      payload.momoExp = momoExp.value + successRewardExp;
     }
 
     await editMomoData(userId, payload);
 
     return {
       isSuccess,
+      rewardExp: isSuccess ? successRewardExp : 0,
       matchedTransactions: response.data,
     };
   };
