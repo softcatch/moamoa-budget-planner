@@ -30,26 +30,24 @@ const openGuide = () => {
 <template>
   <section class="rounded-[24px] bg-white p-4 shadow-sm">
     <div class="flex items-start justify-between gap-3">
-      <div class="flex items-start gap-3">
+      <div>
         <div>
           <p class="text-xs font-semibold tracking-[0.14em] text-slate-400">EXP</p>
-          <h2 class="mt-1 text-base font-bold text-slate-900">성장 경험치</h2>
+          <h2 class="mt-1 text-3xl font-bold text-emerald-600">Lv. {{ level }}</h2>
         </div>
-
-        <button
-          type="button"
-          class="inline-flex items-center justify-center rounded-full bg-emerald-50 p-1.5 transition hover:bg-emerald-100 active:scale-[0.98]"
-          @click="openGuide"
-          aria-label="모모 상태 안내 열기"
-        >
-          <img
-            :src="momoCuriousImage"
-            alt="궁금한 모모"
-            class="h-11 w-11 image-rendering-pixel"
-          />
-        </button>
       </div>
-      <span class="pt-1 text-sm font-bold text-emerald-600">Lv. {{ level }}</span>
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-full bg-emerald-50 p-1.5 transition hover:bg-emerald-100 active:scale-[0.98]"
+        @click="openGuide"
+        aria-label="모모 상태 안내 열기"
+      >
+        <img
+          :src="momoCuriousImage"
+          alt="궁금한 모모"
+          class="h-11 w-11 image-rendering-pixel"
+        />
+      </button>
     </div>
 
     <div class="mt-4 overflow-hidden rounded-full bg-slate-100 p-1">
