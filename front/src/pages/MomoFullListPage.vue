@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, nextTick } from 'vue';
+import { computed, onMounted, watch, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 
 import AppHeader from '@/components/AppHeader.vue';
@@ -8,8 +8,6 @@ import { useMomoStore } from '@/stores/momo';
 
 const momoStore = useMomoStore();
 const route = useRoute();
-
-const currentUserId = ref('1111');
 
 const sortedTransactions = computed(() => {
   return [...momoStore.transactionList].sort(
@@ -42,9 +40,7 @@ const makeDateAnchorId = (dateString) => {
   return `date-${dateString}`;
 };
 
-onMounted(async () => {
-  await momoStore.fetchTransactionList(currentUserId.value);
-
+const scrollToHashTarget = async () => {
   await nextTick();
 
   if (route.hash) {
@@ -60,11 +56,31 @@ onMounted(async () => {
       });
     }
   }
+};
+
+onMounted(async () => {
+  if (momoStore.currentMomoUserId) {
+    await momoStore.fetchTransactionList(momoStore.currentMomoUserId);
+  }
+
+  await scrollToHashTarget();
 });
+
+watch(
+  () => momoStore.currentMomoUserId,
+  async (newUserId, oldUserId) => {
+    if (!newUserId || newUserId === oldUserId) return;
+
+    await momoStore.fetchTransactionList(newUserId);
+    await scrollToHashTarget();
+  },
+);
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#eaf3ef] px-4 py-5 pb-[112px] text-slate-900 md:px-8 lg:pb-10 lg:pr-[120px]">
+  <main
+    class="min-h-screen bg-[#eaf3ef] px-4 py-5 pb-[112px] text-slate-900 md:px-8 lg:pb-10 lg:pr-[120px]"
+  >
     <div
       class="mx-auto min-h-[calc(100vh-2.5rem)] w-full max-w-[480px] rounded-[32px] bg-[#F4F7F6] px-5 pt-5 pb-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:max-w-[1040px] lg:px-8 lg:pt-7 lg:pb-8"
     >
@@ -102,7 +118,10 @@ onMounted(async () => {
           </section>
         </template>
 
-        <p v-else class="py-10 text-center text-sm font-medium text-slate-400 lg:col-span-2">
+        <p
+          v-else
+          class="py-10 text-center text-sm font-medium text-slate-400 lg:col-span-2"
+        >
           거래 내역이 없습니다.
         </p>
       </div>
