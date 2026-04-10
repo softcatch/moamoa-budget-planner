@@ -8,6 +8,7 @@ const authStore = useAuthStore();
 
 const mode = ref('login');
 const localErrorMessage = ref('');
+const showSecurityModal = ref(false);
 
 const form = reactive({
   username: '',
@@ -88,6 +89,14 @@ const switchMode = (nextMode) => {
   localErrorMessage.value = '';
   mode.value = nextMode;
   resetForm();
+
+  if (nextMode === 'signup') {
+    showSecurityModal.value = true;
+  }
+};
+
+const closeSecurityModal = () => {
+  showSecurityModal.value = false;
 };
 </script>
 
@@ -170,7 +179,7 @@ const switchMode = (nextMode) => {
                   v-model="form.password"
                   type="password"
                   autocomplete="current-password"
-                  placeholder="[보안 주의] 평소 사용하시는 중요한 비밀번호를 입력하지 마세요."
+                  placeholder="비밀번호를 입력하세요"
                   class="h-[52px] w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:bg-white"
                 />
               </div>
@@ -235,6 +244,35 @@ const switchMode = (nextMode) => {
             </button>
           </div>
         </div>
+      </section>
+    </div>
+
+    <div
+      v-if="showSecurityModal"
+      class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/45 px-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="security-modal-title"
+    >
+      <section
+        class="w-full max-w-[360px] rounded-[28px] bg-white px-6 py-6 shadow-[0_18px_60px_rgba(15,23,42,0.28)]"
+      >
+        <h2
+          id="security-modal-title"
+          class="text-[20px] font-extrabold text-slate-900"
+        >
+          [보안 주의]
+        </h2>
+        <p class="mt-4 text-[15px] font-medium leading-6 text-slate-600">
+          평소 사용하시는 중요한 비밀번호를 사용하지 마세요.
+        </p>
+        <button
+          type="button"
+          class="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-emerald-500 text-[15px] font-bold text-white"
+          @click="closeSecurityModal"
+        >
+          확인
+        </button>
       </section>
     </div>
   </main>
