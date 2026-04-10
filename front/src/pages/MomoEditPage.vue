@@ -347,6 +347,35 @@ const submitForm = async () => {
   }
 };
 
+const deleteTransaction = async () => {
+  if (isSubmitting.value) return;
+
+  inlineErrorMessage.value = '';
+
+  if (!isEditMode.value || !editingTransactionId.value) {
+    inlineErrorMessage.value = '삭제할 거래 ID가 없습니다.';
+    return;
+  }
+
+  if (!authStore.currentUserId) {
+    inlineErrorMessage.value = '로그인 정보가 없습니다.';
+    return;
+  }
+
+  isSubmitting.value = true;
+
+  try {
+    await momoStore.deleteTransactionData(editingTransactionId.value);
+    await momoStore.fetchTransactionList(authStore.currentUserId);
+    router.back();
+  } catch (error) {
+    console.error('deleteTransaction error:', error);
+    inlineErrorMessage.value = '삭제 중 오류가 발생했습니다.';
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
 onMounted(async () => {
   await hydrateEditForm();
 });
@@ -572,8 +601,10 @@ watch(
         <section v-if="isEditMode" class="w-full lg:col-start-1">
           <button
             type="button"
-            class="flex h-16 w-full items-center justify-center gap-3 rounded-[22px] bg-rose-50 text-[18px] font-bold text-rose-400 transition hover:bg-rose-100"
-            >
+            :disabled="isSubmitting"
+            class="flex h-16 w-full items-center justify-center gap-3 rounded-[22px] bg-rose-50 text-[18px] font-bold text-rose-400 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+            @click="deleteTransaction"
+          >
             <i class="fa-regular fa-trash-can text-[18px]"></i>
             <span>삭제하기</span>
           </button>
