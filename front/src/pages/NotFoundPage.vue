@@ -1,33 +1,51 @@
-<template>
-    <div class="flex flex-col justify-center items-center h-screen px-6 bg-slate-50 text-center">
-
-        <div class="mb-6">
-            <div class="text-[80px] animate-bounce">🟢💦</div>
-        </div>
-
-        <div class="mb-10">
-            <h1 class="text-[22px] font-extrabold text-gray-800 mb-3">앗! 마리모가 길을 잃었어요!</h1>
-            <p class="text-[15px] text-gray-500 leading-relaxed">
-                존재하지 않는 공간에 떨어졌습니다.<br />
-                수조 밖은 마리모에게 너무 위험해요!
-            </p>
-        </div>
-
-        <button @click="goHome"
-            class="w-full max-w-[300px] p-4 bg-emerald-500 text-white text-base font-bold rounded-2xl shadow-[0_4px_12px_rgba(16,185,129,0.3)] transition-all duration-200 active:bg-emerald-600 active:translate-y-0.5">
-            안전한 마리모 수조로 돌아가기
-        </button>
-
-    </div>
-</template>
-
-<script setup>
+﻿<script setup>
+import momo404Image from '@/assets/momo/momo-404.png';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
 const goHome = () => {
-    // 홈 라우트로 이동
-    router.push('/');
+  router.push('/');
 };
 </script>
+
+<template>
+  <main
+    class="min-h-screen bg-[radial-gradient(circle_at_top,_#dce9d9_0%,_#eff5f1_40%,_#f6f9f7_100%)] px-4 py-8"
+  >
+    <section
+      class="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[520px] flex-col items-center justify-center rounded-[32px] border border-white/70 bg-white/70 px-6 py-8 text-center shadow-[0_20px_60px_rgba(15,23,42,0.10)] backdrop-blur-sm sm:px-8"
+    >
+      <span
+        class="rounded-full bg-emerald-50 px-4 py-2 text-xs font-bold tracking-[0.24em] text-emerald-600"
+      >
+        404 NOT FOUND
+      </span>
+
+      <img
+        :src="momo404Image"
+        alt="길을 잃고 슬퍼하는 모모"
+        class="mt-6 w-full max-w-[360px] drop-shadow-[0_18px_40px_rgba(15,23,42,0.18)]"
+      />
+
+      <div class="mt-7">
+        <h1 class="text-[30px] font-extrabold leading-tight text-slate-900">
+          모모가 길을 잃어버렸어요
+        </h1>
+        <p class="mt-4 text-[15px] leading-7 text-slate-500">
+          찾으시는 페이지가 보이지 않아요.
+          <br />
+          홈으로 돌아가서 모모를 다시 만나볼까요?
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="mt-8 inline-flex min-h-[56px] w-full max-w-[280px] items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,#38d39f_0%,#1fb6a6_100%)] px-6 text-base font-bold text-white shadow-[0_16px_36px_rgba(31,182,166,0.30)] transition active:translate-y-[1px]"
+        @click="goHome"
+      >
+        홈으로 돌아가기
+      </button>
+    </section>
+  </main>
+</template>
