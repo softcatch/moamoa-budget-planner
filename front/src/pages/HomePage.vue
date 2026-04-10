@@ -151,30 +151,30 @@ const getAttendanceRewardExp = (attendance, isFirstAttendance = false) => {
   }
 
   if (attendance <= 1) {
-    return 10;
+    return 200;
   }
 
   if (attendance === 2) {
-    return 30;
+    return 220;
   }
 
   if (attendance === 3) {
-    return 50;
+    return 240;
   }
 
   if (attendance === 4) {
-    return 70;
+    return 260;
   }
 
   if (attendance === 5) {
-    return 80;
+    return 270;
   }
 
   if (attendance === 6) {
-    return 90;
+    return 280;
   }
 
-  return 100;
+  return 290;
 };
 
 const fetchHomeData = async (userId) => {
