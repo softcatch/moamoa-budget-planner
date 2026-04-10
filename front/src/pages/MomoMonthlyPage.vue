@@ -122,6 +122,16 @@ const onSelectDate = (date) => {
   );
 };
 
+const onMoveMonth = ({ year, month }) => {
+  const currentDate = selectedDate.value;
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
+
+  if (currentYear === year && currentMonth === month) return;
+
+  selectedDate.value = new Date(year, month - 1, 1);
+};
+
 const monthLabel = computed(() => {
   return `${selectedDate.value.getMonth() + 1}월 요약`;
 });
@@ -207,6 +217,7 @@ watch(
               :selectedDate="selectedDate"
               :dailyTotalsMap="dailyTotalsMap"
               @select-date="onSelectDate"
+              @move-month="onMoveMonth"
             />
           </section>
         </div>

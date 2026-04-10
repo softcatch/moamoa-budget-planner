@@ -4,7 +4,7 @@
       class="fixed bottom-4 left-1/2 z-[100] flex h-[65px] w-[calc(100%-32px)] max-w-[448px] -translate-x-1/2 items-center justify-around rounded-[24px] border border-slate-100 bg-white shadow-[0_10px_34px_rgba(15,23,42,0.10)] lg:bottom-auto lg:left-auto lg:right-5 lg:top-1/2 lg:h-auto lg:w-[80px] lg:max-w-none lg:-translate-y-1/2 lg:translate-x-0 lg:flex-col lg:justify-center lg:gap-y-10 lg:border-none lg:rounded-[32px] lg:py-8 lg:shadow-[0_10px_40px_rgba(0,0,0,0.06)] xl:right-[calc((100vw-1180px)/2)]"
     >
       <router-link
-        :to="{ name: 'momo/edit' }"
+        :to="editRoute"
         class="order-3 flex h-[56px] w-[56px] items-center justify-center rounded-full bg-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)] transition-transform duration-300 hover:scale-110 active:scale-95 lg:order-none"
       >
         <i class="fas fa-plus text-[24px]"></i>
@@ -64,8 +64,28 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 
 const hideNavBarRoutes = ['momo/edit', 'notfound'];
+const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
 const showNavBar = computed(() => {
   return !hideNavBarRoutes.includes(route.name);
+});
+
+const editRoute = computed(() => {
+  if (route.name !== 'momo/monthly') {
+    return { name: 'momo/edit' };
+  }
+
+  const selectedDate = route.query.date;
+
+  if (typeof selectedDate !== 'string' || !datePattern.test(selectedDate)) {
+    return { name: 'momo/edit' };
+  }
+
+  return {
+    name: 'momo/edit',
+    query: {
+      date: selectedDate,
+    },
+  };
 });
 </script>
