@@ -7,7 +7,7 @@ const STORAGE_KEY = 'moamoa-auth';
 
 export const useAuthStore = defineStore('auth', () => {
   const BASE_URL =
-    'https://moamoa-budget-planner-json-server-production.up.railway.app/';
+    'https://moamoa-budget-planner-json-server-production.up.railway.app';
 
   // 공통 상태 (로딩 / 에러)
   const isFetching = ref(false);
