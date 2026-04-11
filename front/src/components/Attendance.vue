@@ -1,10 +1,16 @@
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
   checkedInToday: {
     type: Boolean,
     default: false,
   },
   attendance: {
+    type: Number,
+    default: 0,
+  },
+  rewardExp: {
     type: Number,
     default: 0,
   },
@@ -15,6 +21,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['attend']);
+
+const titleText = computed(() => {
+  if (props.checkedInToday) {
+    return `\uC5F0\uC18D ${props.attendance}\uC77C \uCD9C\uC11D`;
+  }
+
+  return '\uCD9C\uC11D\uD558\uAE30';
+});
 
 const handleClick = () => {
   if (props.checkedInToday || props.loading) {
@@ -36,8 +50,18 @@ const handleClick = () => {
     <p class="text-xs font-semibold tracking-[0.14em] text-emerald-600">
       ATTENDANCE
     </p>
-    <p class="mt-3 text-lg font-bold">
-      {{ checkedInToday ? `연속 ${attendance}일 출석` : '출석하기' }}
-    </p>
+
+    <div class="mt-3 flex flex-col items-start gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+      <p class="text-lg font-bold leading-snug">
+        {{ titleText }}
+      </p>
+
+      <span
+        v-if="rewardExp > 0"
+        class="shrink-0 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-600"
+      >
+        +{{ rewardExp.toLocaleString() }} EXP
+      </span>
+    </div>
   </button>
 </template>

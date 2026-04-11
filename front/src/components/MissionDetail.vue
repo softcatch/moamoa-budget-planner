@@ -26,7 +26,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['update:modelValue', 'close']);
+const emit = defineEmits(['update:modelValue', 'close', 'settled']);
 
 const momoStore = useMomoStore();
 
@@ -207,6 +207,7 @@ const completeSettlement = async () => {
 
     settlementResult.value = result.isSuccess ? 'success' : 'fail';
     settlementStep.value = 'result';
+    emit('settled', result);
   } catch (error) {
     console.error('completeSettlement error:', error);
     isSettling.value = false;
