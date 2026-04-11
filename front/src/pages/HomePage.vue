@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import Tank from '@/components/Tank.vue';
 import Momo from '@/components/Momo.vue';
 import MomoGuideModal from '@/components/MomoGuideModal.vue';
+import MissionGuideModal from '@/components/MissionGuideModal.vue';
 import ExpBar from '@/components/ExpBar.vue';
 import Attendance from '@/components/Attendance.vue';
 import Mission from '@/components/Mission.vue';
@@ -16,6 +17,7 @@ const authStore = useAuthStore();
 const momoStore = useMomoStore();
 
 const isMissionModalOpen = ref(false);
+const isMissionGuideModalOpen = ref(false);
 const isLogoutModalOpen = ref(false);
 const isMomoGuideModalOpen = ref(false);
 const toastMessage = ref('');
@@ -387,9 +389,11 @@ onBeforeUnmount(() => {
 
               <Mission
                 :missionText="missionText"
+                :showGuideButton="hasMissionForToday"
                 :rewardLabel="missionRewardLabel"
                 :disabled="hasMissionForToday"
                 @open="openMissionModal"
+                @open-guide="isMissionGuideModalOpen = true"
               />
             </div>
           </template>
@@ -415,6 +419,13 @@ onBeforeUnmount(() => {
       @close="isMissionModalOpen = false"
       @settled="handleMissionSettled"
       @update:modelValue="isMissionModalOpen = $event"
+    />
+
+    <MissionGuideModal
+      :modelValue="isMissionGuideModalOpen"
+      :missionCategory="momoStore.momoMission"
+      @close="isMissionGuideModalOpen = false"
+      @update:modelValue="isMissionGuideModalOpen = $event"
     />
 
     <MomoGuideModal
