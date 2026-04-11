@@ -3,7 +3,8 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useMomoStore = defineStore('momo', () => {
-  const BASE_URL = 'https://moamoa-budget-planner-json-server.onrender.com';
+  const BASE_URL =
+    'https://moamoa-budget-planner-json-server-production.up.railway.app/';
   const LEVEL_EXP_UNIT = 1000;
 
   // 로딩 및 에러 상태
@@ -152,11 +153,19 @@ export const useMomoStore = defineStore('momo', () => {
 
       const normalizedPayload = { ...payload };
 
-      if (normalizedPayload.momoExp !== undefined && normalizedPayload.momoLevel === undefined) {
-        normalizedPayload.momoLevel = getLevelFromExp(normalizedPayload.momoExp);
+      if (
+        normalizedPayload.momoExp !== undefined &&
+        normalizedPayload.momoLevel === undefined
+      ) {
+        normalizedPayload.momoLevel = getLevelFromExp(
+          normalizedPayload.momoExp,
+        );
       }
 
-      const response = await axios.patch(`${BASE_URL}/momoData/${targetMomoDataId}`, normalizedPayload);
+      const response = await axios.patch(
+        `${BASE_URL}/momoData/${targetMomoDataId}`,
+        normalizedPayload,
+      );
       momoDataId.value = response.data.id;
       currentMomoUserId.value = response.data.userId;
       await fetchMomoData(userId);
@@ -226,7 +235,12 @@ export const useMomoStore = defineStore('momo', () => {
     };
   };
 
-  const updateMomoAttendance = async (userId, attendance, finalAttendance, exp) => {
+  const updateMomoAttendance = async (
+    userId,
+    attendance,
+    finalAttendance,
+    exp,
+  ) => {
     const payload = {
       momoAttendance: attendance,
     };

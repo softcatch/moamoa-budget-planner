@@ -3,10 +3,11 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 // sessionStorage에 저장할 키 이름
-const STORAGE_KEY = 'moamoa-auth'; 
+const STORAGE_KEY = 'moamoa-auth';
 
 export const useAuthStore = defineStore('auth', () => {
-  const BASE_URL = 'https://moamoa-budget-planner-json-server.onrender.com';
+  const BASE_URL =
+    'https://moamoa-budget-planner-json-server-production.up.railway.app/';
 
   // 공통 상태 (로딩 / 에러)
   const isFetching = ref(false);
@@ -246,9 +247,12 @@ export const useAuthStore = defineStore('auth', () => {
         throw new Error('이름을 입력해주세요.');
       }
 
-      const response = await axios.patch(`${BASE_URL}/users/${currentUserId.value}`, {
-        name: trimmedName,
-      });
+      const response = await axios.patch(
+        `${BASE_URL}/users/${currentUserId.value}`,
+        {
+          name: trimmedName,
+        },
+      );
 
       currentName.value = response.data.name || trimmedName;
       persistAuth();
@@ -293,15 +297,20 @@ export const useAuthStore = defineStore('auth', () => {
         throw new Error('바꿀 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
       }
 
-      const userResponse = await axios.get(`${BASE_URL}/users/${currentUserId.value}`);
+      const userResponse = await axios.get(
+        `${BASE_URL}/users/${currentUserId.value}`,
+      );
 
       if (userResponse.data.password !== trimmedCurrentPassword) {
         throw new Error('현재 비밀번호가 일치하지 않습니다.');
       }
 
-      const response = await axios.patch(`${BASE_URL}/users/${currentUserId.value}`, {
-        password: trimmedNextPassword,
-      });
+      const response = await axios.patch(
+        `${BASE_URL}/users/${currentUserId.value}`,
+        {
+          password: trimmedNextPassword,
+        },
+      );
 
       return response.data;
     } catch (error) {
