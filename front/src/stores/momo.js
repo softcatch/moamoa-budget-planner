@@ -96,18 +96,28 @@ export const useMomoStore = defineStore('momo', () => {
     }
   };
 
-  const fetchTransactionList = async (userId) => {
+  const fetchTransactionList = async (userId, filters = {}) => {
     isFetching.value = true;
     isError.value = false;
 
     try {
+      const params = {
+        userId,
+      };
+
+      if (filters.category) {
+        params.category = filters.category;
+      }
+
       const response = await axios.get(`${BASE_URL}/transactions`, {
-        params: { userId },
+        params,
       });
       transactionList.value = response.data;
+      return response.data;
     } catch (error) {
       console.error('fetchTransactionList error:', error);
       isError.value = true;
+      return [];
     } finally {
       isFetching.value = false;
     }
