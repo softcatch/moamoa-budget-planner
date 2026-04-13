@@ -1,4 +1,4 @@
-export const categoryMap = {
+﻿export const categoryMap = {
   expense: [
     {
       key: 'food',
@@ -30,7 +30,7 @@ export const categoryMap = {
     },
     {
       key: 'hobby',
-      label: '취미활동',
+      label: '취미/여가',
       icon: 'fa-solid fa-gamepad',
       iconClass: 'text-fuchsia-500',
       activeClass: 'bg-fuchsia-50 text-fuchsia-600 ring-fuchsia-200',
