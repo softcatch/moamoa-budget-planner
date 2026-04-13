@@ -73,7 +73,7 @@ const formatRangeLabelDate = (date) => {
   return `${normalized.getFullYear()}.${String(normalized.getMonth() + 1).padStart(2, '0')}.${String(normalized.getDate()).padStart(2, '0')}`;
 };
 
-const selectedRange = ref(getMonthRange());
+const selectedRange = ref(null);
 
 const normalizedRange = computed(() => {
   if (!selectedRange.value?.start && !selectedRange.value?.end) {
@@ -372,7 +372,7 @@ watch(
     selectedCategories.value = [];
     isFilterOpen.value = false;
     showCalendar.value = false;
-    selectedRange.value = getMonthRange();
+    selectedRange.value = null;
 
     await loadInitialTransactions(newUserId);
     await scrollToHashTarget();
@@ -441,7 +441,7 @@ watch(
             >
               <span class="flex min-w-0 items-center gap-2">
                 <i class="fa-solid fa-calendar-days shrink-0 text-emerald-500"></i>
-                <span class="truncate">기간</span>
+                <span class="truncate">{{ rangeLabel }}</span>
               </span>
               <i
                 class="fa-solid fa-chevron-down shrink-0 text-[11px] text-slate-400 transition-transform"
